@@ -122,7 +122,6 @@ public class UserController {
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
         User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
 
         if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
@@ -138,6 +137,7 @@ public class UserController {
         user.setLastName(userDTO.getLastName());
 
         user = userService.save(user);
+        session.setAttribute("user", user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
 
