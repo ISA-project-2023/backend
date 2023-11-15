@@ -26,6 +26,8 @@ public class UserDTO {
         this.category = category;
     }
 
+    public UserDTO(){}
+
     public UserDTO(User user){
         this(user.getId(), user.getUsername(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory());
     }

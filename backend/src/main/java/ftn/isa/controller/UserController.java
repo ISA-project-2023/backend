@@ -112,13 +112,17 @@ public class UserController {
     }
 
     @PutMapping(consumes = "application/json")
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
 
+        if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         User user = userService.findOne(userDTO.getId());
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         user.setPenaltyPoints(userDTO.getPenaltyPoints());
         user.setRole(userDTO.getRole());
         user.setFirstName(userDTO.getFirstName());
@@ -127,6 +131,7 @@ public class UserController {
         user = userService.save(user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
