@@ -24,6 +24,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private HttpSession session;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -33,7 +35,7 @@ public class UserController {
         User authenticatedUser = userService.authenticate(username, password);
 
         if (authenticatedUser != null) {
-            HttpSession session = request.getSession();
+            session = request.getSession();
             session.setAttribute("user", authenticatedUser);
 
             String sessionId = session.getId();
@@ -50,7 +52,6 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
@@ -68,7 +69,15 @@ public class UserController {
         return new ResponseEntity<>(usersDTO, HttpStatus.OK);
     }
 
-    // GET /api/students?page=0&size=5&sort=firstName,DESC
+    @GetMapping("/current-user")
+    public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request) {
+        if (session != null) {
+            User user = (User) session.getAttribute("user");
+            return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
     @GetMapping
     public ResponseEntity<List<UserDTO>> getUsersPage(Pageable page) {
         List<User> users = userService.findAll(page).toList();
