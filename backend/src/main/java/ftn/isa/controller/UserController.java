@@ -1,6 +1,7 @@
 package ftn.isa.controller;
 
 import ftn.isa.domain.User;
+import ftn.isa.domain.UserRole;
 import ftn.isa.dto.UserDTO;
 import ftn.isa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +24,39 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        User authenticatedUser = userService.authenticate(username, password);
+
+        if (authenticatedUser != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("user", authenticatedUser);
+
+            String sessionId = session.getId();
+
+            Cookie cookie = new Cookie("JSESSIONID", sessionId);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            return new ResponseEntity<>(sessionId, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return new ResponseEntity<>("Logout successful", HttpStatus.OK);
+    }
+
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -55,7 +93,7 @@ public class UserController {
     public ResponseEntity<UserDTO> saveUser(@RequestBody Map<String, Object> requestBody) {
 
         Map<String, Object> userDTOMap = (Map<String, Object>) requestBody.get("userDTO");
-        UserDTO userDTO = new UserDTO((Integer) userDTOMap.get("id"),(String) userDTOMap.get("username"),(String) userDTOMap.get("email"),(Integer) userDTOMap.get("penaltyPoints"),(String) userDTOMap.get("category"),(String) userDTOMap.get("firstName"),(String) userDTOMap.get("lastName"));
+        UserDTO userDTO = new UserDTO((Integer) userDTOMap.get("id"),(String) userDTOMap.get("username"),(String) userDTOMap.get("email"),(Integer) userDTOMap.get("penaltyPoints"),(UserRole) userDTOMap.get("role"),(String) userDTOMap.get("firstName"),(String) userDTOMap.get("lastName"), (String) userDTOMap.get("category"));
 
         String password = (String) requestBody.get("password");
 
@@ -64,15 +102,14 @@ public class UserController {
         user.setPassword(password);
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
-        user.setCategory(userDTO.getCategory());
+        user.setRole(userDTO.getRole());
         user.setEmail(userDTO.getEmail());
         user.setPenaltyPoints(0);
+        user.setCategory(userDTO.getCategory());
 
         user = userService.save(user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.CREATED);
     }
-
-
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
@@ -83,7 +120,7 @@ public class UserController {
         }
 
         user.setPenaltyPoints(userDTO.getPenaltyPoints());
-        user.setCategory(userDTO.getCategory());
+        user.setRole(userDTO.getRole());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
 

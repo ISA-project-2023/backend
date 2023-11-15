@@ -17,7 +17,10 @@ public class User {
     private String email;
     @Column(name="penaltyPoints")
     private Integer penaltyPoints;
-    @Column(name="category")
+    @Enumerated(EnumType.STRING)
+    @Column(name="role")
+    private UserRole role;
+    @Column(name = "category")
     private String category;
     @Column(name = "firstName", nullable = false)
     private String firstName;
@@ -28,15 +31,16 @@ public class User {
         super();
     }
 
-    public User(Integer id, String username, String password, String email, Integer penaltyPoints, String category, String firstName, String lastName) {
+    public User(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.penaltyPoints = penaltyPoints;
-        this.category = category;
+        this.role = role;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.category = category;
     }
 
     public Integer getId() {
@@ -79,12 +83,20 @@ public class User {
         this.penaltyPoints = penaltyPoints;
     }
 
+    public UserRole getRole() {
+        return role;
+    }
+
     public String getCategory() {
         return category;
     }
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public String getFirstName() {
