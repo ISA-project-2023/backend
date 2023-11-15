@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "\"user\"")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
