@@ -16,8 +16,13 @@ public class Company {
     private String Location;
     @Column(name = "grade", nullable = false)
     private Float Grade;
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CompanyEquipment> companyEquipments = new HashSet<>();
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "company_equipment",
+            joinColumns = { @JoinColumn(name = "company_id") },
+            inverseJoinColumns = { @JoinColumn(name = "equipment_id") }
+    )
+    private Set<Equipment> equipment = new HashSet<>();
     public Company(){super();}
     public Company(Integer id, String name, String location, Float grade) {
         Id = id;
@@ -53,11 +58,12 @@ public class Company {
     public void setGrade(Float grade) {
         Grade = grade;
     }
-    public Set<CompanyEquipment> getCompanyEquipments() {
-        return companyEquipments;
+
+    public Set<Equipment> getEquipments() {
+        return equipment;
     }
 
-    public void setCompanyEquipments(Set<CompanyEquipment> companyEquipments) {
-        this.companyEquipments = companyEquipments;
+    public void setEquipments(Set<Equipment> equipments) {
+        this.equipment = equipments;
     }
 }
