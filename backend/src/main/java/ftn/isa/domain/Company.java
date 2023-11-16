@@ -1,6 +1,9 @@
 package ftn.isa.domain;
 
+import org.hibernate.annotations.Check;
+
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +17,12 @@ public class Company {
     private String Name;
     @Column(name = "location", nullable = false)
     private String Location;
+    @Column(name = "start_time", nullable = false)
+    private LocalTime StartTime;
+    @Column(name = "end_time", nullable = false)
+    private LocalTime EndTime;
+    @Check(constraints = "start_time < end_time")
+
     @Column(name = "grade", nullable = false)
     private Float Grade;
     @ManyToMany(cascade = { CascadeType.ALL })
@@ -24,11 +33,13 @@ public class Company {
     )
     private Set<Equipment> equipment = new HashSet<>();
     public Company(){super();}
-    public Company(Integer id, String name, String location, Float grade) {
+    public Company(Integer id, String name, String location, Float grade, LocalTime startTime, LocalTime endTime) {
         Id = id;
         Name = name;
         Location = location;
         Grade = grade;
+        StartTime = startTime;
+        EndTime = endTime;
     }
     public Integer getId() {
         return Id;
@@ -42,19 +53,19 @@ public class Company {
     public void setName(String name) {
         Name = name;
     }
-
     public String getLocation() {
         return Location;
     }
-
     public void setLocation(String location) {
         Location = location;
     }
-
+    public LocalTime getStartTime() { return StartTime; }
+    public void setStartTime(LocalTime startTime) { this.StartTime = startTime; }
+    public LocalTime getEndTime() { return EndTime; }
+    public void setEndTime(LocalTime endTime) { this.EndTime = endTime; }
     public Float getGrade() {
         return Grade;
     }
-
     public void setGrade(Float grade) {
         Grade = grade;
     }
