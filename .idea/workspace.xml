@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="04806072-8dae-4987-acb3-a4a04af29c26" name="Changes" comment="" />
+    <list default="true" id="04806072-8dae-4987-acb3-a4a04af29c26" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,9 +15,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2Y8ON0DjDsffQenmg8l0GC9hOi8" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -26,8 +28,8 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/Dušan/Documents/Fakultet/ISA/backo/backend/backend",
+    "git-widget-placeholder": "feat/user__registration",
+    "last_opened_file_path": "C:/Users/Laptop/Desktop/backend/backend/backend",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -40,6 +42,7 @@
       <option name="presentableId" value="Default" />
       <updated>1699903695272</updated>
       <workItem from="1699903696268" duration="22000" />
+      <workItem from="1700161248772" duration="11000" />
     </task>
     <servers />
   </component>

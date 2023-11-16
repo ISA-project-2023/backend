@@ -29,6 +29,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private  HttpSession session;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -38,7 +40,7 @@ public class UserController {
         User authenticatedUser = userService.authenticate(username, password);
 
         if (authenticatedUser != null) {
-            HttpSession session = request.getSession();
+            session = request.getSession();
             session.setAttribute("user", authenticatedUser);
 
             String sessionId = session.getId();
@@ -52,10 +54,17 @@ public class UserController {
             return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
     }
+     @GetMapping("/current-user")
+     public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
+        if(session!=null){
+            User user = (User) session.getAttribute("user");
+            return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
@@ -122,7 +131,6 @@ public class UserController {
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
         User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
 
         if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
@@ -138,6 +146,7 @@ public class UserController {
         user.setLastName(userDTO.getLastName());
 
         user = userService.save(user);
+        session.setAttribute("user", user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
 
