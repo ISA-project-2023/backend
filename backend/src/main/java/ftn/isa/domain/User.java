@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "\"user\"")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +43,6 @@ public class User {
         this.lastName = lastName;
         this.category = category;
     }
-
     public Integer getId() {
         return id;
     }

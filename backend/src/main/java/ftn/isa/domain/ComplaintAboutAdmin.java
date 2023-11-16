@@ -10,17 +10,17 @@ public class ComplaintAboutAdmin {
 
     @ManyToOne
     @JoinColumn(name = "adminId", referencedColumnName = "id")
-    private User admin;
+    private Employee admin;
 
     @Column(name="text", nullable = false)
     private String text;
 
     @ManyToOne
     @JoinColumn(name = "employeeId", referencedColumnName = "id")
-    private User employee;
+    private Employee employee;
 
     public ComplaintAboutAdmin(){super();}
-    public ComplaintAboutAdmin(int id, User admin, String text, User employee) {
+    public ComplaintAboutAdmin(int id, Employee admin, String text, Employee employee) {
         this.id = id;
         this.admin = admin;
         this.text = text;
@@ -39,7 +39,7 @@ public class ComplaintAboutAdmin {
         return admin;
     }
 
-    public void setAdmin(User admin) {
+    public void setAdmin(Employee admin) {
         this.admin = admin;
     }
 
@@ -55,7 +55,7 @@ public class ComplaintAboutAdmin {
         return employee;
     }
 
-    public void setEmployee(User employee) {
+    public void setEmployee(Employee employee) {
         this.employee = employee;
     }
 }

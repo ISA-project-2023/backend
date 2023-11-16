@@ -1,8 +1,11 @@
 package ftn.isa.controller;
 
+import ftn.isa.domain.Employee;
 import ftn.isa.domain.User;
 import ftn.isa.domain.UserRole;
+import ftn.isa.dto.EmployeeDTO;
 import ftn.isa.dto.UserDTO;
+import ftn.isa.service.EmployeeService;
 import ftn.isa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +28,7 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private HttpSession session;
+    private EmployeeService employeeService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -35,7 +38,7 @@ public class UserController {
         User authenticatedUser = userService.authenticate(username, password);
 
         if (authenticatedUser != null) {
-            session = request.getSession();
+            HttpSession session = request.getSession();
             session.setAttribute("user", authenticatedUser);
 
             String sessionId = session.getId();
@@ -52,6 +55,7 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
@@ -69,15 +73,7 @@ public class UserController {
         return new ResponseEntity<>(usersDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/current-user")
-    public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request) {
-        if (session != null) {
-            User user = (User) session.getAttribute("user");
-            return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
-
+    // GET /api/students?page=0&size=5&sort=firstName,DESC
     @GetMapping
     public ResponseEntity<List<UserDTO>> getUsersPage(Pageable page) {
         List<User> users = userService.findAll(page).toList();
@@ -99,29 +95,34 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<?> saveUser(@RequestBody EmployeeDTO employeeDTO, @RequestParam String password) {
 
-        Map<String, Object> userDTOMap = (Map<String, Object>) requestBody.get("userDTO");
-        UserDTO userDTO = new UserDTO((Integer) userDTOMap.get("id"),(String) userDTOMap.get("username"),(String) userDTOMap.get("email"),(Integer) userDTOMap.get("penaltyPoints"),(UserRole) userDTOMap.get("role"),(String) userDTOMap.get("firstName"),(String) userDTOMap.get("lastName"), (String) userDTOMap.get("category"));
+        Employee employee = new Employee();
 
-        String password = (String) requestBody.get("password");
+        employee.setCity(employeeDTO.getCity());
+        employee.setCountry(employeeDTO.getCountry());
+        employee.setCompanyInfo(employeeDTO.getCompanyInfo());
+        employee.setPhoneNumber(employeeDTO.getPhoneNumber());
+        employee.setUsername(employeeDTO.getUsername());
+        employee.setPassword(password);
+        employee.setFirstName(employeeDTO.getFirstName());
+        employee.setLastName(employeeDTO.getLastName());
+        employee.setRole(employeeDTO.getRole());
+        employee.setEmail(employeeDTO.getEmail());
+        employee.setPenaltyPoints(0);
+        employee.setCategory(employeeDTO.getCategory());
 
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(password);
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setRole(userDTO.getRole());
-        user.setEmail(userDTO.getEmail());
-        user.setPenaltyPoints(0);
-        user.setCategory(userDTO.getCategory());
+        employee = employeeService.save(employee);
 
-        user = userService.save(user);
-        return new ResponseEntity<>(new UserDTO(user), HttpStatus.CREATED);
+        if(employee != null){
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
         User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
 
         if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
@@ -137,7 +138,6 @@ public class UserController {
         user.setLastName(userDTO.getLastName());
 
         user = userService.save(user);
-        session.setAttribute("user", user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
 

@@ -15,8 +15,8 @@ public class PickUpAppointment {
 
     @ManyToOne
     @JoinColumn(name = "companyAdminId", referencedColumnName = "id")
-    private User companyAdmin;
-    public PickUpAppointment(Integer id, LocalDateTime date, Integer duration, User companyAdmin) {
+    private Employee companyAdmin;
+    public PickUpAppointment(Integer id, LocalDateTime date, Integer duration, Employee companyAdmin) {
         this.id = id;
         this.date = date;
         this.duration = duration;
@@ -51,7 +51,7 @@ public class PickUpAppointment {
         return companyAdmin;
     }
 
-    public void setCompanyAdmin(User companyAdmin) {
+    public void setCompanyAdmin(Employee companyAdmin) {
         this.companyAdmin = companyAdmin;
     }
 }
