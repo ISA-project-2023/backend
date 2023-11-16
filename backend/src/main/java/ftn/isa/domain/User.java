@@ -43,7 +43,6 @@ public class User {
         this.lastName = lastName;
         this.category = category;
     }
-
     public Integer getId() {
         return id;
     }

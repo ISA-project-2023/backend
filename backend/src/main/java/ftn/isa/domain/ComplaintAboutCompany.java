@@ -18,10 +18,10 @@ public class ComplaintAboutCompany {
 
     @ManyToOne
     @JoinColumn(name = "employeeId", referencedColumnName = "id")
-    private User employee;
+    private Employee employee;
     public ComplaintAboutCompany(){super();}
 
-    public ComplaintAboutCompany(int id, Company company, String text, User employee) {
+    public ComplaintAboutCompany(int id, Company company, String text, Employee employee) {
         this.id = id;
         this.company = company;
         this.text = text;
@@ -56,7 +56,7 @@ public class ComplaintAboutCompany {
         return employee;
     }
 
-    public void setEmployee(User employee) {
+    public void setEmployee(Employee employee) {
         this.employee = employee;
     }
 }

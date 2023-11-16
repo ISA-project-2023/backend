@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 public class EmployeeService {
     @Autowired
     private IEmployeeRepository employeeRepository;
-
-    public Employee findByUsername(String username){
-        return employeeRepository.findOneByUsername(username);
-    }
-}
+    public Employee save(Employee employee) {
+        try {
+            Employee savedEmployee = employeeRepository.save(employee);
+            return savedEmployee;
+        } catch (Exception e) {
+            throw e; // Rethrow the exception after logging
+        }
+    }}

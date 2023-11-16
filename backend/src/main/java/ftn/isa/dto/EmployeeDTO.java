@@ -12,15 +12,6 @@ public class EmployeeDTO extends UserDTO {
     public EmployeeDTO() {
     }
 
-    public EmployeeDTO(Integer id, String username, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category,
-                       String city, String country, String phoneNumber, String companyInfo) {
-        super(id, username, email, penaltyPoints, role, firstName, lastName, category);
-        this.city = city;
-        this.country = country;
-        this.phoneNumber = phoneNumber;
-        this.companyInfo = companyInfo;
-    }
-
     public EmployeeDTO(Employee employee) {
         super(employee.getId(), employee.getUsername(), employee.getEmail(), employee.getPenaltyPoints(), employee.getRole(),
                 employee.getFirstName(), employee.getLastName(), employee.getCategory());
@@ -29,7 +20,6 @@ public class EmployeeDTO extends UserDTO {
         this.phoneNumber = employee.getPhoneNumber();
         this.companyInfo = employee.getCompanyInfo();
     }
-
     public String getCity() {
         return city;
     }

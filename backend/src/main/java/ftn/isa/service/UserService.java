@@ -29,13 +29,13 @@ public class UserService {
         userRepository.deleteById(id);
     }
     public User findByUsername(String index) { return userRepository.findOneByUsername(index); }
-
     public List<User> findByLastName(String lastName) { return userRepository.findAllByLastName(lastName); }
-
     public List<User> findByFirstNameAndLastName(String firstName, String lastName) { return userRepository.findByFirstNameAndLastNameAllIgnoringCase(firstName, lastName); }
-
     public List<User> findPremiumUsers() {
         return userRepository.findPremiumUsers();
+    }
+    private boolean passwordMatches(String password, String password1) {
+        return password.matches(password1);
     }
     public User authenticate(String username, String password) {
         User user = findByUsername(username);
@@ -46,9 +46,4 @@ public class UserService {
 
         return null;
     }
-
-    private boolean passwordMatches(String password, String password1) {
-        return password.matches(password1);
-    }
-
 }

@@ -1,10 +1,12 @@
 package ftn.isa.domain;
 
 
+import ftn.isa.dto.UserDTO;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "employee")
+@Table(name="employee")
 public class Employee extends User {
     @Column(name = "city")
     private String city;
@@ -14,6 +16,7 @@ public class Employee extends User {
     private String phoneNumber;
     @Column(name = "companyInfo")
     private String companyInfo;
+
     public Employee() {
         super();
     }
@@ -24,6 +27,9 @@ public class Employee extends User {
         this.country = country;
         this.phoneNumber = phoneNumber;
         this.companyInfo = companyInfo;
+    }
+
+    public Employee(UserDTO userDTO, String city, String country, String phoneNumber, String companyInfo) {
     }
     public String getCity() {
         return city;
