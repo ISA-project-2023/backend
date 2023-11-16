@@ -55,7 +55,7 @@ public class CompanyController {
         }
         return new ResponseEntity<>(new CompanyDTO(c), HttpStatus.OK);
     }
-    @PostMapping(consumes = "aplication/json")
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<CompanyDTO> saveCompany(@RequestBody CompanyDTO companyDTO) {
         Company company = new Company();
         company.setName(companyDTO.getName());
@@ -73,7 +73,7 @@ public class CompanyController {
         company = companyService.save(company);
         return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.CREATED);
     }
-    @PutMapping(consumes = "aplication/json")
+    @PutMapping(consumes = "application/json")
     public ResponseEntity<CompanyDTO> updateCompany(@RequestBody CompanyDTO companyDTO) {
         Company company = companyService.findOne(companyDTO.getId());
         if (company == null){
