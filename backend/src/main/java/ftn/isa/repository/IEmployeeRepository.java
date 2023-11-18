@@ -4,4 +4,5 @@ import ftn.isa.domain.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
+    Employee findByToken(String token);
 }
