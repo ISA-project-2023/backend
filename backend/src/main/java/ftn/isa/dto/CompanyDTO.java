@@ -3,47 +3,54 @@ package ftn.isa.dto;
 import ftn.isa.domain.Company;
 import ftn.isa.domain.Equipment;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
 public class CompanyDTO {
-    private Integer Id;
-    private String Name;
-    private String Location;
-    private LocalTime StartTime;
-    private LocalTime EndTime;
-    private Float Grade;
-    private Set<Equipment> EquipmentInStock;
+    private Integer id;
+    private String name;
+    private String location;
+    private String startTime;
+    private String endTime;
+    private Float grade;
+    private Set<Equipment> equipmentInStock;
     public Integer getId() {
-        return Id;
+        return id;
     }
     public String getName() {
-        return Name;
+        return name;
     }
     public String getLocation() {
-        return Location;
+        return location;
     }
-    public LocalTime getStartTime() { return StartTime; }
-    public LocalTime getEndTime() { return EndTime; }
-    public Float getGrade() { return Grade; }
-    public Set<Equipment> getEquipment() { return EquipmentInStock; }
+    public String getStartTime() { return startTime; }
+    public String getEndTime() { return endTime; }
+    public Float getGrade() { return grade; }
+    public Set<Equipment> getEquipment() { return equipmentInStock; }
+
+    public void setEquipment(Set<Equipment> equipment) {
+        this.equipmentInStock = equipment;
+    }
+    public CompanyDTO() { }
 
     public CompanyDTO(Company company){
-        this.Id = company.getId();
-        this.Name = company.getName();
-        this.Location = company.getLocation();
-        this.StartTime = company.getStartTime();
-        this.EndTime = company.getEndTime();
-        this.Grade = company.getGrade();
-        this.EquipmentInStock = company.getEquipments();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        this.id = company.getId();
+        this.name = company.getName();
+        this.location = company.getLocation();
+        this.startTime = company.getStartTime().format(formatter);
+        this.endTime = company.getEndTime().format(formatter);
+        this.grade = company.getGrade();
+        this.equipmentInStock = company.getEquipments();
     }
-    public CompanyDTO(Integer id, String name, String location, LocalTime startTime, LocalTime endTime, Float grade) {
-        Id = id;
-        Name = name;
-        Location = location;
-        StartTime = startTime;
-        EndTime = endTime;
-        Grade = grade;
-        EquipmentInStock = new HashSet<>();
+    public CompanyDTO(Integer Id, String Name, String Location, String StartTime, String EndTime, Float Grade) {
+        id = Id;
+        name = Name;
+        location = Location;
+        startTime = StartTime;
+        endTime = EndTime;
+        grade = Grade;
+        equipmentInStock = new HashSet<>();
     }
 }

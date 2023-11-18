@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,11 +61,14 @@ public class CompanyController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<CompanyDTO> saveCompany(@RequestBody CompanyDTO companyDTO) {
         Company company = new Company();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
         company.setName(companyDTO.getName());
         company.setLocation(companyDTO.getLocation());
         company.setGrade(companyDTO.getGrade());
-        company.setStartTime(companyDTO.getStartTime());
-        company.setEndTime(companyDTO.getEndTime());
+        company.setStartTime(LocalTime.parse(companyDTO.getStartTime(), formatter));
+        company.setEndTime(LocalTime.parse(companyDTO.getEndTime(), formatter));
+
 
         //validation for start and end time
         int comparisonLocalTime = company.getEndTime().compareTo(company.getStartTime());
@@ -79,12 +85,13 @@ public class CompanyController {
         if (company == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         company.setName(companyDTO.getName());
         company.setLocation(companyDTO.getLocation());
         company.setGrade(companyDTO.getGrade());
-        company.setStartTime(companyDTO.getStartTime());
-        company.setEndTime(companyDTO.getEndTime());
+        company.setStartTime(LocalTime.parse(companyDTO.getStartTime(), formatter));
+        company.setEndTime(LocalTime.parse(companyDTO.getEndTime(), formatter));
 
         company = companyService.save(company);
         return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.OK);
