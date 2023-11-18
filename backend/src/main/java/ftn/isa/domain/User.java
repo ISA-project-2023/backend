@@ -27,6 +27,10 @@ public class User {
     private String firstName;
     @Column(name = "lastName", nullable = false)
     private String lastName;
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
+    @Column(name = "token", nullable = false)
+    private String token;
 
     public User() {
         super();
@@ -45,6 +49,22 @@ public class User {
     }
     public Integer getId() {
         return id;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public void setId(Integer id) {

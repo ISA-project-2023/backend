@@ -14,6 +14,11 @@ public class EmployeeService {
             Employee savedEmployee = employeeRepository.save(employee);
             return savedEmployee;
         } catch (Exception e) {
-            throw e; // Rethrow the exception after logging
+            throw e;
         }
-    }}
+    }
+
+    public Employee findByToken(String token) {
+        return employeeRepository.findByToken(token);
+    }
+}

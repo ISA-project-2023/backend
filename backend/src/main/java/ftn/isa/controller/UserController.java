@@ -5,6 +5,7 @@ import ftn.isa.domain.User;
 import ftn.isa.domain.UserRole;
 import ftn.isa.dto.EmployeeDTO;
 import ftn.isa.dto.UserDTO;
+import ftn.isa.service.EmailService;
 import ftn.isa.service.EmployeeService;
 import ftn.isa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -31,6 +34,8 @@ public class UserController {
     private EmployeeService employeeService;
     @Autowired
     private  HttpSession session;
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -39,7 +44,7 @@ public class UserController {
 
         User authenticatedUser = userService.authenticate(username, password);
 
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && authenticatedUser.isEnabled()) {
             session = request.getSession();
             session.setAttribute("user", authenticatedUser);
 
@@ -103,8 +108,21 @@ public class UserController {
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
 
+    @GetMapping("/activate/{token}")
+    public ResponseEntity<String> activateAccount(@PathVariable String token) {
+        Employee employee = employeeService.findByToken(token);
+
+        if (employee != null) {
+            employee.setEnabled(true);
+            employeeService.save(employee);
+            return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid activation token", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> saveUser(@RequestBody EmployeeDTO employeeDTO, @RequestParam String password) {
+    public ResponseEntity<?> saveUser(@RequestBody EmployeeDTO employeeDTO, @RequestParam String password) throws MessagingException {
 
         Employee employee = new Employee();
 
@@ -121,12 +139,27 @@ public class UserController {
         employee.setPenaltyPoints(0);
         employee.setCategory(employeeDTO.getCategory());
 
+        String token = UUID.randomUUID().toString();
+        employee.setToken(token);
+        employee.setEnabled(false);
+
+        emailService.send(employee.getEmail(), generateActivationEmailBody(employee.getFirstName()+" "+employee.getLastName(), token), "ISA Project - Confirm registration");
         employee = employeeService.save(employee);
 
         if(employee != null){
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    public String generateActivationEmailBody(String userName, String activationLink) {
+        String fullActivationLink = "http://localhost:4200/activate/" + activationLink;
+
+        return "<p>Dear <strong>" + userName + "</strong>,</p>\n" +
+                "<p>Thank you for choosing our service! We're excited to have you on board.</p>\n" +
+                "<p>Your registration is almost complete. Please click the following link to activate your account:</p>\n" +
+                "<p><a href=\"" + fullActivationLink + "\">Activation Link</a></p>\n" +
+                "<p>If you have any questions, feel free to contact our support team.</p>\n" +
+                "<p>Best regards,<br/>ISA project members</p>";
     }
 
     @PutMapping(consumes = "application/json")
