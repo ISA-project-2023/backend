@@ -1,5 +1,6 @@
 package ftn.isa.service;
 
+import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyAdmin;
 import ftn.isa.repository.ICompanyAdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,5 @@ public class CompanyAdminService {
     public void remove(Integer id) {
         companyAdminRepository.deleteById(id);
     }
-    public List<CompanyAdmin> findAllByCompany(Integer companyId) { return companyAdminRepository.findAllByCompany(companyId); }
+    public List<CompanyAdmin> findAllByCompany(Company company) { return companyAdminRepository.findAllByCompany(company); }
 }
