@@ -1,5 +1,6 @@
 package ftn.isa.controller;
 
+import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyAdmin;
 import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.service.CompanyAdminService;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping(value = "api/companyAdmins")
+@RequestMapping(value = "api/users/companyAdmins")
 public class CompanyAdminController {
     @Autowired
     private CompanyAdminService companyAdminService;
@@ -89,9 +90,9 @@ public class CompanyAdminController {
         }
     }
 
-    @GetMapping(value = "/findByCompany")
-    public ResponseEntity<List<CompanyAdminDTO>> getCompanyAdminsByCompany(@RequestParam Integer companyId) {
-        List<CompanyAdmin> admins = companyAdminService.findAllByCompany(companyId);
+    @PostMapping(value = "/findByCompany")
+    public ResponseEntity<List<CompanyAdminDTO>> getCompanyAdminsByCompany(@RequestBody Company company) {
+        List<CompanyAdmin> admins = companyAdminService.findAllByCompany(company);
 
         List<CompanyAdminDTO> companyAdminsDTO = new ArrayList<>();
         for (CompanyAdmin s : admins) {
