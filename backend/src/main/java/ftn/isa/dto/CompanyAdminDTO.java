@@ -3,7 +3,7 @@ package ftn.isa.dto;
 import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyAdmin;
 
-public class CompanyAdminDTO {
+public class CompanyAdminDTO extends UserDTO {
     private Integer id;
     private String jobDescription;
     private Company company;

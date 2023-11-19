@@ -73,6 +73,8 @@ public class CompanyAdminController {
         }
         admin.setJobDescription(companyAdminDTO.getJobDescription());
         admin.setCompany(companyAdminDTO.getCompany());
+        admin.setLastName(companyAdminDTO.getLastName());
+        admin.setFirstName(companyAdminDTO.getFirstName());
 
         admin = companyAdminService.save(admin);
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
