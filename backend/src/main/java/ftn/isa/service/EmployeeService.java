@@ -21,4 +21,5 @@ public class EmployeeService {
     public Employee findByToken(String token) {
         return employeeRepository.findByToken(token);
     }
+    public Employee find(Integer id){return employeeRepository.find(id);}
 }

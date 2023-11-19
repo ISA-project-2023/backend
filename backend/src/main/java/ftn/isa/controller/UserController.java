@@ -41,12 +41,16 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
-
+        Employee loggedinEemployee = null;
         User authenticatedUser = userService.authenticate(username, password);
+        if(authenticatedUser.getRole()== UserRole.EMPLOYEE){
+            loggedinEemployee = employeeService.find(authenticatedUser.getId());
+        }
 
         if (authenticatedUser != null && authenticatedUser.isEnabled()) {
             session = request.getSession();
             session.setAttribute("user", authenticatedUser);
+            session.setAttribute("employee", loggedinEemployee);
 
             String sessionId = session.getId();
 
@@ -59,14 +63,22 @@ public class UserController {
             return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
     }
-     @GetMapping("/current-user")
-     public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
+     @GetMapping("/current-employee")
+     public ResponseEntity<EmployeeDTO> getCurrentEmployee(HttpServletRequest request){
+        if(session!=null){
+            Employee employee = (Employee) session.getAttribute("employee");
+            return new ResponseEntity<>(new EmployeeDTO(employee), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+     }
+    @GetMapping("/current-user")
+    public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
         if(session!=null){
             User user = (User) session.getAttribute("user");
             return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-     }
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
@@ -169,7 +181,7 @@ public class UserController {
         if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        User user = userService.findOne(userDTO.getId());
+        User user = employeeService.find(userDTO.getId());
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -181,6 +193,31 @@ public class UserController {
         user = userService.save(user);
         session.setAttribute("user", user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+    }
+
+    @PutMapping(path="/employee", consumes = "application/json")
+    public ResponseEntity<EmployeeDTO> updateEmployee(@RequestBody EmployeeDTO employeeDTO, HttpServletRequest request) {
+        Employee loggedInEmployee = (session != null) ? (Employee) session.getAttribute("employee") : null;
+
+        if (loggedInEmployee == null || !loggedInEmployee.getId().equals(employeeDTO.getId())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Employee employee = employeeService.find(employeeDTO.getId());
+        if (employee == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        employee.setPenaltyPoints(employeeDTO.getPenaltyPoints());
+        employee.setRole(employeeDTO.getRole());
+        employee.setFirstName(employeeDTO.getFirstName());
+        employee.setLastName(employeeDTO.getLastName());
+        employee.setCity(employeeDTO.getCity());
+        employee.setCountry(employeeDTO.getCountry());
+        employee.setCompanyInfo(employeeDTO.getCompanyInfo());
+        employee.setPhoneNumber(employee.getPhoneNumber());
+
+        employee = employeeService.save(employee);
+        session.setAttribute("employee", employee);
+        return new ResponseEntity<>(new EmployeeDTO(employee), HttpStatus.OK);
     }
 
 
