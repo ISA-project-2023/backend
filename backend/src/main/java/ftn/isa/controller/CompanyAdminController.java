@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -56,11 +57,26 @@ public class CompanyAdminController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO) {
+    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO, @RequestParam String password) {
 
         CompanyAdmin admin = new CompanyAdmin();
 
-        //admin.setUser(adminDTO.getUser());
+        admin.setFirstName(adminDTO.getFirstName());
+        admin.setLastName(adminDTO.getLastName());
+        admin.setUsername(adminDTO.getUsername());
+        admin.setPassword(password);
+        admin.setEmail(adminDTO.getEmail());
+        admin.setPenaltyPoints(adminDTO.getPenaltyPoints());
+        admin.setRole(adminDTO.getRole());
+        admin.setCategory(adminDTO.getCategory());
+        admin.setEnabled(true);
+        System.out.println(admin.getFirstName());
+        System.out.println(admin.getLastName());
+        System.out.println(admin.getUsername());
+
+        String token = UUID.randomUUID().toString();
+        admin.setToken(token);
+
         admin.setJobDescription(adminDTO.getJobDescription());
         admin.setCompany(adminDTO.getCompany());
 
