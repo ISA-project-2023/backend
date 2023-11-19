@@ -31,7 +31,7 @@ public class Company {
             joinColumns = { @JoinColumn(name = "company_id") },
             inverseJoinColumns = { @JoinColumn(name = "equipment_id") }
     )
-    private Set<Equipment> equipment = new HashSet<>();
+    private Set<Equipment> equipmentInStock = new HashSet<>();
     public Company(){super();}
     public Company(Integer id, String name, String location, Float grade, LocalTime startTime, LocalTime endTime) {
         Id = id;
@@ -71,10 +71,10 @@ public class Company {
     }
 
     public Set<Equipment> getEquipments() {
-        return equipment;
+        return equipmentInStock;
     }
 
     public void setEquipments(Set<Equipment> equipments) {
-        this.equipment = equipments;
+        this.equipmentInStock = equipments;
     }
 }

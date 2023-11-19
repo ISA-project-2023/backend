@@ -68,6 +68,7 @@ public class EquipmentController {
         Equipment equipment = new Equipment();
         equipment.setName(equipmentDTO.getName());
         equipment.setDescription(equipmentDTO.getDescription());
+        equipment.setType(equipmentDTO.getType());
 
         equipment = equipmentService.save(equipment);
         return new ResponseEntity<>(new EquipmentDTO(equipment), HttpStatus.CREATED);
@@ -82,6 +83,7 @@ public class EquipmentController {
         }
 
         equipment.setName(equipmentDTO.getName());
+        equipment.setType(equipmentDTO.getType());
         equipment.setDescription(equipmentDTO.getDescription());
 
         equipment = equipmentService.save(equipment);
