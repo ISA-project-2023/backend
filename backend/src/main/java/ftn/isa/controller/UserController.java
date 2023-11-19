@@ -213,7 +213,7 @@ public class UserController {
         employee.setCity(employeeDTO.getCity());
         employee.setCountry(employeeDTO.getCountry());
         employee.setCompanyInfo(employeeDTO.getCompanyInfo());
-        employee.setPhoneNumber(employee.getPhoneNumber());
+        employee.setPhoneNumber(employeeDTO.getPhoneNumber());
 
         employee = employeeService.save(employee);
         session.setAttribute("employee", employee);
