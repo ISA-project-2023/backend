@@ -29,7 +29,7 @@ public class User {
     private String lastName;
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
-    @Column(name = "token")
+    @Column(name = "token", nullable = false)
     private String token;
 
     public User() {
