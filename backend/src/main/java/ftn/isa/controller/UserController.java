@@ -197,6 +197,27 @@ public class UserController {
                 "<p>If you have any questions, feel free to contact our support team.</p>\n" +
                 "<p>Best regards,<br/>ISA project members</p>";
     }
+    @PostMapping(value = "/store", consumes = "application/json")
+    public ResponseEntity<?> storeUser(@RequestBody UserDTO userDTO, @RequestParam String password) {
+
+        User user = new User();
+
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(password);
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setRole(userDTO.getRole());
+        user.setEmail(userDTO.getEmail());
+        user.setPenaltyPoints(0);
+        user.setCategory(userDTO.getCategory());
+
+        user = userService.save(user);
+
+        if(user != null){
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, HttpServletRequest request) {

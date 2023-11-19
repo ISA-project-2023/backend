@@ -51,6 +51,7 @@ public class UserDTO {
     public UserRole getRole() {
         return role;
     }
+
     public String getCategory(){ return category; }
 
     public String getFirstName() {

@@ -14,7 +14,7 @@ public class CompanyAdmin extends User {
 
     public CompanyAdmin() { super(); }
 
-    public CompanyAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category, Integer id1, String jobDescription, Company company) {
+    public CompanyAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, String jobDescription, Company company) {
         super(id, username, password, email, penaltyPoints, role, firstName, lastName, category);
         //this.id = id1;
         this.jobDescription = jobDescription;

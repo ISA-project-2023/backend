@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -54,19 +56,33 @@ public class CompanyAdminController {
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
     }
 
-//    @PostMapping(consumes = "application/json")
-//    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody Map<String, Object> requestBody) {
-//
-//        Map<String, Object> companyAdminDTOMap = (Map<String, Object>) requestBody.get("userDTO");
-//        CompanyAdminDTO adminDTO = new CompanyAdminDTO((Integer) companyAdminDTOMap.get("id"),(String) companyAdminDTOMap.get("jobDescription") /*COMPANY*/);
-//
-//        CompanyAdmin admin = new CompanyAdmin();
-//        admin.setJobDescription(adminDTO.getJobDescription());
-//        admin.setCompany(adminDTO.getCompany());
-//
-//        admin = companyAdminService.save(admin);
-//        return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
-//    }
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO, @RequestParam String password) {
+
+        CompanyAdmin admin = new CompanyAdmin();
+
+        admin.setFirstName(adminDTO.getFirstName());
+        admin.setLastName(adminDTO.getLastName());
+        admin.setUsername(adminDTO.getUsername());
+        admin.setPassword(password);
+        admin.setEmail(adminDTO.getEmail());
+        admin.setPenaltyPoints(adminDTO.getPenaltyPoints());
+        admin.setRole(adminDTO.getRole());
+        admin.setCategory(adminDTO.getCategory());
+        admin.setEnabled(true);
+        System.out.println(admin.getFirstName());
+        System.out.println(admin.getLastName());
+        System.out.println(admin.getUsername());
+
+        String token = UUID.randomUUID().toString();
+        admin.setToken(token);
+
+        admin.setJobDescription(adminDTO.getJobDescription());
+        admin.setCompany(adminDTO.getCompany());
+
+        admin = companyAdminService.save(admin);
+        return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
+    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<CompanyAdminDTO> updateCompanyAdmin(@RequestBody CompanyAdminDTO companyAdminDTO, HttpServletRequest request) {
