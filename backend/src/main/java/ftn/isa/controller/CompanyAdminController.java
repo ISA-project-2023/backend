@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import java.util.List;
 public class CompanyAdminController {
     @Autowired
     private CompanyAdminService companyAdminService;
+    @Autowired
+    private HttpSession session;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<CompanyAdminDTO>> getAllCompanyAdmins() {
@@ -77,6 +80,7 @@ public class CompanyAdminController {
         admin.setFirstName(companyAdminDTO.getFirstName());
 
         admin = companyAdminService.save(admin);
+        session.setAttribute("companyAdmin", admin);
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
     }
 

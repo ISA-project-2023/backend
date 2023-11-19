@@ -3,11 +3,14 @@ package ftn.isa.controller;
 import ftn.isa.domain.Employee;
 import ftn.isa.domain.User;
 import ftn.isa.domain.UserRole;
+import ftn.isa.domain.CompanyAdmin;
+import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.dto.EmployeeDTO;
 import ftn.isa.dto.UserDTO;
 import ftn.isa.service.EmailService;
 import ftn.isa.service.EmployeeService;
 import ftn.isa.service.UserService;
+import ftn.isa.service.CompanyAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,8 @@ public class UserController {
     @Autowired
     private EmployeeService employeeService;
     @Autowired
+    private CompanyAdminService companyAdminService;
+    @Autowired
     private  HttpSession session;
     @Autowired
     private EmailService emailService;
@@ -42,16 +47,27 @@ public class UserController {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
         Employee loggedinEemployee = null;
+        CompanyAdmin loggedinCompanyAdmin = null;
         User authenticatedUser = userService.authenticate(username, password);
-        if(authenticatedUser.getRole()== UserRole.EMPLOYEE){
+        if (authenticatedUser.getRole() == UserRole.COMPANY_ADMIN){
+            loggedinCompanyAdmin = companyAdminService.findOne(authenticatedUser.getId());
+        } else if (authenticatedUser.getRole() == UserRole.EMPLOYEE){
             loggedinEemployee = employeeService.find(authenticatedUser.getId());
+        } else if (authenticatedUser.getRole() == UserRole.SYSTEM_ADMIN){
+            //TODO
+        } else {
+            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
 
         if (authenticatedUser != null && authenticatedUser.isEnabled()) {
             session = request.getSession();
             session.setAttribute("user", authenticatedUser);
-            session.setAttribute("employee", loggedinEemployee);
-
+            if (loggedinEemployee != null){
+                session.setAttribute("employee", loggedinEemployee);
+            } else if (loggedinEemployee != null){
+                session.setAttribute("companyAdmin", loggedinCompanyAdmin);
+            } //TODO
+            // else if (){}
             String sessionId = session.getId();
 
             Cookie cookie = new Cookie("JSESSIONID", sessionId);
@@ -71,6 +87,14 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
      }
+    @GetMapping("/current-companyAdmin")
+    public ResponseEntity<CompanyAdminDTO> getCurrentCompanyAdmin(HttpServletRequest request){
+        if(session!=null){
+            CompanyAdmin admin = (CompanyAdmin) session.getAttribute("companyAdmin");
+            return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
     @GetMapping("/current-user")
     public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
         if(session!=null){
