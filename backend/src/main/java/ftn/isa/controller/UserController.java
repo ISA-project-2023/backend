@@ -160,6 +160,14 @@ public class UserController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<?> saveUser(@RequestBody CustomerDTO customerDTO, @RequestParam String password) throws MessagingException {
 
+        List<User> users = new ArrayList<>();
+        users = userService.findAll();
+        for(User u: users){
+            if (u.getEmail().equals(customerDTO.getEmail())){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
+
         Customer customer = new Customer();
 
         customer.setCity(customerDTO.getCity());
