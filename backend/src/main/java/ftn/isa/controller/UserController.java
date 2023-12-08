@@ -1,14 +1,14 @@
 package ftn.isa.controller;
 
-import ftn.isa.domain.Employee;
+import ftn.isa.domain.Customer;
 import ftn.isa.domain.User;
 import ftn.isa.domain.UserRole;
 import ftn.isa.domain.CompanyAdmin;
 import ftn.isa.dto.CompanyAdminDTO;
-import ftn.isa.dto.EmployeeDTO;
+import ftn.isa.dto.CustomerDTO;
 import ftn.isa.dto.UserDTO;
 import ftn.isa.service.EmailService;
-import ftn.isa.service.EmployeeService;
+import ftn.isa.service.CustomerService;
 import ftn.isa.service.UserService;
 import ftn.isa.service.CompanyAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private EmployeeService employeeService;
+    private CustomerService customerService;
     @Autowired
     private CompanyAdminService companyAdminService;
     @Autowired
@@ -46,13 +46,13 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request, HttpServletResponse response) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
-        Employee loggedinEemployee = null;
+        Customer loggedinCustomer = null;
         CompanyAdmin loggedinCompanyAdmin = null;
         User authenticatedUser = userService.authenticate(username, password);
         if (authenticatedUser.getRole() == UserRole.COMPANY_ADMIN){
             loggedinCompanyAdmin = companyAdminService.findOne(authenticatedUser.getId());
-        } else if (authenticatedUser.getRole() == UserRole.EMPLOYEE){
-            loggedinEemployee = employeeService.find(authenticatedUser.getId());
+        } else if (authenticatedUser.getRole() == UserRole.CUSTOMER){
+            loggedinCustomer = customerService.find(authenticatedUser.getId());
         } else if (authenticatedUser.getRole() == UserRole.SYSTEM_ADMIN){
             //TODO
         } else {
@@ -62,9 +62,9 @@ public class UserController {
         if (authenticatedUser != null && authenticatedUser.isEnabled()) {
             session = request.getSession();
             session.setAttribute("user", authenticatedUser);
-            if (loggedinEemployee != null){
-                session.setAttribute("employee", loggedinEemployee);
-            } else if (loggedinEemployee != null){
+            if (loggedinCustomer != null){
+                session.setAttribute("customer", loggedinCustomer);
+            } else if (loggedinCustomer != null){
                 session.setAttribute("companyAdmin", loggedinCompanyAdmin);
             } //TODO
             // else if (){}
@@ -79,11 +79,11 @@ public class UserController {
             return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
     }
-     @GetMapping("/current-employee")
-     public ResponseEntity<EmployeeDTO> getCurrentEmployee(HttpServletRequest request){
+     @GetMapping("/current-customer")
+     public ResponseEntity<CustomerDTO> getCurrentCustomer(HttpServletRequest request){
         if(session!=null){
-            Employee employee = (Employee) session.getAttribute("employee");
-            return new ResponseEntity<>(new EmployeeDTO(employee), HttpStatus.OK);
+            Customer customer = (Customer) session.getAttribute("customer");
+            return new ResponseEntity<>(new CustomerDTO(customer), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
      }
@@ -146,11 +146,11 @@ public class UserController {
 
     @GetMapping("/activate/{token}")
     public ResponseEntity<String> activateAccount(@PathVariable String token) {
-        Employee employee = employeeService.findByToken(token);
+        Customer customer = customerService.findByToken(token);
 
-        if (employee != null) {
-            employee.setEnabled(true);
-            employeeService.save(employee);
+        if (customer != null) {
+            customer.setEnabled(true);
+            customerService.save(customer);
             return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Invalid activation token", HttpStatus.NOT_FOUND);
@@ -158,31 +158,31 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> saveUser(@RequestBody EmployeeDTO employeeDTO, @RequestParam String password) throws MessagingException {
+    public ResponseEntity<?> saveUser(@RequestBody CustomerDTO customerDTO, @RequestParam String password) throws MessagingException {
 
-        Employee employee = new Employee();
+        Customer customer = new Customer();
 
-        employee.setCity(employeeDTO.getCity());
-        employee.setCountry(employeeDTO.getCountry());
-        employee.setCompanyInfo(employeeDTO.getCompanyInfo());
-        employee.setPhoneNumber(employeeDTO.getPhoneNumber());
-        employee.setUsername(employeeDTO.getUsername());
-        employee.setPassword(password);
-        employee.setFirstName(employeeDTO.getFirstName());
-        employee.setLastName(employeeDTO.getLastName());
-        employee.setRole(employeeDTO.getRole());
-        employee.setEmail(employeeDTO.getEmail());
-        employee.setPenaltyPoints(0);
-        employee.setCategory(employeeDTO.getCategory());
+        customer.setCity(customerDTO.getCity());
+        customer.setCountry(customerDTO.getCountry());
+        customer.setCompanyInfo(customerDTO.getCompanyInfo());
+        customer.setPhoneNumber(customerDTO.getPhoneNumber());
+        customer.setUsername(customerDTO.getUsername());
+        customer.setPassword(password);
+        customer.setFirstName(customerDTO.getFirstName());
+        customer.setLastName(customerDTO.getLastName());
+        customer.setRole(customerDTO.getRole());
+        customer.setEmail(customerDTO.getEmail());
+        customer.setPenaltyPoints(0);
+        customer.setCategory(customerDTO.getCategory());
 
         String token = UUID.randomUUID().toString();
-        employee.setToken(token);
-        employee.setEnabled(false);
+        customer.setToken(token);
+        customer.setEnabled(false);
 
-        emailService.send(employee.getEmail(), generateActivationEmailBody(employee.getFirstName()+" "+employee.getLastName(), token), "ISA Project - Confirm registration");
-        employee = employeeService.save(employee);
+        emailService.send(customer.getEmail(), generateActivationEmailBody(customer.getFirstName()+" "+ customer.getLastName(), token), "ISA Project - Confirm registration");
+        customer = customerService.save(customer);
 
-        if(employee != null){
+        if(customer != null){
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -226,7 +226,7 @@ public class UserController {
         if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        User user = employeeService.find(userDTO.getId());
+        User user = customerService.find(userDTO.getId());
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -240,29 +240,29 @@ public class UserController {
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
 
-    @PutMapping(path="/employee", consumes = "application/json")
-    public ResponseEntity<EmployeeDTO> updateEmployee(@RequestBody EmployeeDTO employeeDTO, HttpServletRequest request) {
-        Employee loggedInEmployee = (session != null) ? (Employee) session.getAttribute("employee") : null;
+    @PutMapping(path="/customer", consumes = "application/json")
+    public ResponseEntity<CustomerDTO> updateCustomer(@RequestBody CustomerDTO customerDTO, HttpServletRequest request) {
+        Customer loggedInCustomer = (session != null) ? (Customer) session.getAttribute("customer") : null;
 
-        if (loggedInEmployee == null || !loggedInEmployee.getId().equals(employeeDTO.getId())) {
+        if (loggedInCustomer == null || !loggedInCustomer.getId().equals(customerDTO.getId())) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        Employee employee = employeeService.find(employeeDTO.getId());
-        if (employee == null) {
+        Customer customer = customerService.find(customerDTO.getId());
+        if (customer == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        employee.setPenaltyPoints(employeeDTO.getPenaltyPoints());
-        employee.setRole(employeeDTO.getRole());
-        employee.setFirstName(employeeDTO.getFirstName());
-        employee.setLastName(employeeDTO.getLastName());
-        employee.setCity(employeeDTO.getCity());
-        employee.setCountry(employeeDTO.getCountry());
-        employee.setCompanyInfo(employeeDTO.getCompanyInfo());
-        employee.setPhoneNumber(employeeDTO.getPhoneNumber());
+        customer.setPenaltyPoints(customerDTO.getPenaltyPoints());
+        customer.setRole(customerDTO.getRole());
+        customer.setFirstName(customerDTO.getFirstName());
+        customer.setLastName(customerDTO.getLastName());
+        customer.setCity(customerDTO.getCity());
+        customer.setCountry(customerDTO.getCountry());
+        customer.setCompanyInfo(customerDTO.getCompanyInfo());
+        customer.setPhoneNumber(customerDTO.getPhoneNumber());
 
-        employee = employeeService.save(employee);
-        session.setAttribute("employee", employee);
-        return new ResponseEntity<>(new EmployeeDTO(employee), HttpStatus.OK);
+        customer = customerService.save(customer);
+        session.setAttribute("customer", customer);
+        return new ResponseEntity<>(new CustomerDTO(customer), HttpStatus.OK);
     }
 
 

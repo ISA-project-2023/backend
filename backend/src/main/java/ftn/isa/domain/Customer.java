@@ -6,8 +6,8 @@ import ftn.isa.dto.UserDTO;
 import javax.persistence.*;
 
 @Entity
-@Table(name="employee")
-public class Employee extends User {
+@Table(name="customer")
+public class Customer extends User {
     @Column(name = "city")
     private String city;
     @Column(name = "country")
@@ -17,10 +17,10 @@ public class Employee extends User {
     @Column(name = "companyInfo")
     private String companyInfo;
 
-    public Employee() {
+    public Customer() {
         super();
     }
-    public Employee(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category,
+    public Customer(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category,
                     String city, String country, String phoneNumber, String companyInfo) {
         super(id, username, password, email, penaltyPoints, role, firstName, lastName, category);
         this.city = city;
@@ -29,7 +29,7 @@ public class Employee extends User {
         this.companyInfo = companyInfo;
     }
 
-    public Employee(UserDTO userDTO, String city, String country, String phoneNumber, String companyInfo) {
+    public Customer(UserDTO userDTO, String city, String country, String phoneNumber, String companyInfo) {
     }
     public String getCity() {
         return city;
@@ -65,7 +65,7 @@ public class Employee extends User {
 
     @Override
     public String toString() {
-        return "Employee [id=" + getId() + ", username=" + getUsername() + ", firstName=" + getFirstName() + ", lastName=" + getLastName() +
+        return "Customer [id=" + getId() + ", username=" + getUsername() + ", firstName=" + getFirstName() + ", lastName=" + getLastName() +
                 ", city=" + city + ", country=" + country + ", phoneNumber=" + phoneNumber + ", companyInfo=" + companyInfo + "]";
     }
 }

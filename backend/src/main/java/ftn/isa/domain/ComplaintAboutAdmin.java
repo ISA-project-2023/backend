@@ -10,21 +10,21 @@ public class ComplaintAboutAdmin {
 
     @ManyToOne
     @JoinColumn(name = "adminId", referencedColumnName = "id")
-    private Employee admin;
+    private Customer admin;
 
     @Column(name="text", nullable = false)
     private String text;
 
     @ManyToOne
     @JoinColumn(name = "employeeId", referencedColumnName = "id")
-    private Employee employee;
+    private Customer customer;
 
     public ComplaintAboutAdmin(){super();}
-    public ComplaintAboutAdmin(int id, Employee admin, String text, Employee employee) {
+    public ComplaintAboutAdmin(int id, Customer admin, String text, Customer customer) {
         this.id = id;
         this.admin = admin;
         this.text = text;
-        this.employee = employee;
+        this.customer = customer;
     }
 
     public int getId() {
@@ -39,7 +39,7 @@ public class ComplaintAboutAdmin {
         return admin;
     }
 
-    public void setAdmin(Employee admin) {
+    public void setAdmin(Customer admin) {
         this.admin = admin;
     }
 
@@ -52,10 +52,10 @@ public class ComplaintAboutAdmin {
     }
 
     public User getEmployee() {
-        return employee;
+        return customer;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmployee(Customer customer) {
+        this.customer = customer;
     }
 }

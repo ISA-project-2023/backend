@@ -1,7 +1,7 @@
 package ftn.isa.domain;
 
 public enum UserRole {
-    EMPLOYEE,
+    CUSTOMER,
     COMPANY_ADMIN,
     SYSTEM_ADMIN,
     UNSIGNED

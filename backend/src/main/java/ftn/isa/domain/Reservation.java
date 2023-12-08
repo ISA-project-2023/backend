@@ -13,15 +13,15 @@ public class Reservation {
     private PickUpAppointment pickUpAppointment;
     @OneToOne
     @JoinColumn(name = "employeeId", referencedColumnName = "id")
-    private Employee employee;
+    private Customer customer;
     @Enumerated(EnumType.STRING)
     @Column(name="status", nullable = false)
     private ReservationStatus status;
 
-    public Reservation(Integer id, PickUpAppointment pickUpAppointment, Employee employee, ReservationStatus status) {
+    public Reservation(Integer id, PickUpAppointment pickUpAppointment, Customer customer, ReservationStatus status) {
         this.id = id;
         this.pickUpAppointment = pickUpAppointment;
-        this.employee = employee;
+        this.customer = customer;
         this.status = status;
     }
 
@@ -45,11 +45,11 @@ public class Reservation {
     }
 
     public User getEmployee() {
-        return employee;
+        return customer;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmployee(Customer customer) {
+        this.customer = customer;
     }
 
     public ReservationStatus getStatus() {
