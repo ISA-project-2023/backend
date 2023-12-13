@@ -1,0 +1,30 @@
+package ftn.isa.service;
+
+import ftn.isa.domain.Company;
+import ftn.isa.domain.Customer;
+import ftn.isa.domain.Reservation;
+import ftn.isa.repository.IReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ReservationService {
+    @Autowired
+    private IReservationRepository reservationRepository;
+
+    public Reservation save(Reservation reservation){
+        return reservationRepository.save(reservation);
+    }
+    public List<Reservation> getAll(){
+        return reservationRepository.findAll();
+    }
+    public List<Reservation> getAllByCustomer(Integer id){
+        return reservationRepository.findAllByCustomerId(id);
+    }
+    public List<Reservation> getAllByCompany(Integer id){
+        return reservationRepository.findAllByCompanyId(id);
+    }
+
+}
