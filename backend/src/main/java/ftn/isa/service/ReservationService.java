@@ -7,6 +7,7 @@ import ftn.isa.repository.IReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,7 +22,15 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
     public List<Reservation> getAllByCustomer(Integer id){
-        return reservationRepository.findAllByCustomerId(id);
+        List<Reservation> reservations = new ArrayList<>();
+        List<Reservation> result = new ArrayList<>();
+        reservations = getAll();
+        for (Reservation r : reservations) {
+            if(r.getCustomer().getId().equals(id)){
+                result.add(r);
+            }
+        }
+        return result;
     }
     public List<Reservation> getAllByCompany(Integer id){
         return reservationRepository.findAllByCompanyId(id);

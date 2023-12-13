@@ -8,12 +8,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class CompanyAdminService {
     @Autowired
     private ICompanyAdminRepository companyAdminRepository;
-    public CompanyAdmin findOne(Integer id) { return companyAdminRepository.findById(id).orElseGet(null); }
+    public CompanyAdmin findOne(Integer id) {
+        List<CompanyAdmin> admins = new ArrayList<>();
+        admins = findAll();
+        for(CompanyAdmin a :admins){
+            if(a.getId() == id){
+                return a;
+            }
+        }
+        return null;
+    }
     public List<CompanyAdmin> findAll() {
         return companyAdminRepository.findAll();
     }
