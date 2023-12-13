@@ -1,8 +1,10 @@
 package ftn.isa.controller;
 
+import ftn.isa.domain.PickUpAppointment;
 import ftn.isa.domain.Reservation;
 import ftn.isa.domain.ReservationStatus;
 import ftn.isa.dto.ReservationDTO;
+import ftn.isa.service.PickUpAppointmentService;
 import ftn.isa.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ import java.util.List;
 public class ReservationController {
     @Autowired
     private ReservationService service;
+
+    @Autowired
+    private PickUpAppointmentService pickupService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationDTO>> getAllReservations() {
@@ -55,7 +60,10 @@ public class ReservationController {
         reservation.setCustomer(reservationDto.getCustomer());
         reservation.setEquipment(reservationDto.getEquipment());
         reservation.setStatus(ReservationStatus.PENDING);
-        reservation.setPickUpAppointment(reservationDto.getPickUpAppointment());
+        PickUpAppointment pua = reservationDto.getPickUpAppointment();
+        pua.setFree(false);
+        pua = pickupService.save(pua);
+        reservation.setPickUpAppointment(pua);
 
         reservation = service.save(reservation);
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,6 +36,12 @@ public class PickUpAppointmentController {
             PickUpAppointmentsDTO.add(new PickUpAppointmentDTO(s));
         }
         return new ResponseEntity<>(PickUpAppointmentsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/custom/{day}/{month}/{year}/{companyId}")
+    public ResponseEntity<List<PickUpAppointmentDTO>> getCustomOnDate(@PathVariable Integer day, @PathVariable Integer month, @PathVariable Integer year, @PathVariable Integer companyId){
+        LocalDate localDate = LocalDate.of(year, month, day);
+        return new ResponseEntity<>(service.findCustom(localDate.atStartOfDay(), companyId), HttpStatus.OK);
     }
 
     @GetMapping
@@ -138,7 +145,7 @@ public class PickUpAppointmentController {
 
     @PostMapping(value = "/findByCompanyAdmin")
     public ResponseEntity<List<PickUpAppointmentDTO>> getAppointmentsByCompanyAdmins(@RequestBody CompanyAdmin companyAdmin) {
-        List<PickUpAppointment> appointments = service.findByCompanyAdmin(companyAdmin);
+        List<PickUpAppointment> appointments = service.findByCompanyAdminId(companyAdmin.getId());
 
         List<PickUpAppointmentDTO> pickUpAppointmentsDTO = new ArrayList<>();
         for (PickUpAppointment s : appointments) {
@@ -152,7 +159,7 @@ public class PickUpAppointmentController {
         List<PickUpAppointment> appointments = new ArrayList<>();
         List<CompanyAdmin> admins = companyAdminService.findAllByCompany(company);
         for (CompanyAdmin ca : admins) {
-            List<PickUpAppointment> adminsAppointment = service.findByCompanyAdmin(ca);
+            List<PickUpAppointment> adminsAppointment = service.findByCompanyAdminId(ca.getId());
             appointments.addAll(adminsAppointment);
         }
 

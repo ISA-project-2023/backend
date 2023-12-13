@@ -16,7 +16,7 @@ public class PickUpAppointment {
     private Integer duration;
     @Column(name="isFree", nullable = false)
     private boolean isFree = true;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "companyAdminId", referencedColumnName = "id")
     private CompanyAdmin companyAdmin;
     public PickUpAppointment(Integer id, LocalDateTime date, Integer duration, boolean isFree, CompanyAdmin companyAdmin) {
