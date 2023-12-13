@@ -25,7 +25,7 @@ public class Company {
 
     @Column(name = "grade", nullable = false)
     private Float Grade;
-    @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
             name = "company_equipment",
             joinColumns = { @JoinColumn(name = "company_id") },

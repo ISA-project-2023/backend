@@ -12,6 +12,7 @@ public class PickUpAppointmentDTO {
     private CompanyAdmin companyAdmin;
 
     public PickUpAppointmentDTO(){}
+
     public PickUpAppointmentDTO(Integer id, LocalDateTime date, Integer duration, boolean isFree, CompanyAdmin companyAdmin) {
         this.id = id;
         this.date = date;

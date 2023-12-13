@@ -64,7 +64,7 @@ public class UserController {
             session.setAttribute("user", authenticatedUser);
             if (loggedinCustomer != null){
                 session.setAttribute("customer", loggedinCustomer);
-            } else if (loggedinCustomer != null){
+            } else if (loggedinCustomer == null){
                 session.setAttribute("companyAdmin", loggedinCompanyAdmin);
             } //TODO
             // else if (){}

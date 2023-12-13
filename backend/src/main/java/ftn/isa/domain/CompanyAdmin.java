@@ -8,7 +8,7 @@ import java.util.Objects;
 public class CompanyAdmin extends User {
     @Column(name = "jobDescription", nullable = false)
     private String jobDescription;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "companyId", referencedColumnName = "id")
     private Company company;
 

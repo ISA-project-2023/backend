@@ -3,6 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="04806072-8dae-4987-acb3-a4a04af29c26" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/controller/ReservationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/controller/ReservationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/domain/Company.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/domain/Company.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/domain/CompanyAdmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/domain/CompanyAdmin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/domain/PickUpAppointment.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/domain/PickUpAppointment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/dto/PickUpAppointmentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/dto/PickUpAppointmentDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/repository/IReservationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/repository/IReservationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/service/CompanyAdminService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/service/CompanyAdminService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/service/ReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/ftn/isa/service/ReservationService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,8 +39,8 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feat/user__registration",
-    "last_opened_file_path": "C:/Users/Laptop/Desktop/backend/backend/backend",
+    "git-widget-placeholder": "Merging feat/choosing__equipment",
+    "last_opened_file_path": "C:/Users/Laptop/Desktop/backend",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -43,6 +54,7 @@
       <updated>1699903695272</updated>
       <workItem from="1699903696268" duration="22000" />
       <workItem from="1700161248772" duration="11000" />
+      <workItem from="1702505333304" duration="145000" />
     </task>
     <servers />
   </component>
