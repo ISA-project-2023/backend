@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class PickUpAppointmentController {
     }
 
     @PostMapping(value = "/addNew")
-    public ResponseEntity<PickUpAppointmentDTO> savePickUpAppointment(@RequestBody PickUpAppointmentDTO appointmentDTO) {
+    public ResponseEntity<?> savePickUpAppointment(@RequestBody PickUpAppointmentDTO appointmentDTO) {
         // TODO - check if appointment is free for that CompanyAdmin
         if (IsCompanyAdminFree(appointmentDTO)){
             // CompanyAdmin is free in requested appointment
@@ -66,16 +67,18 @@ public class PickUpAppointmentController {
             appointment.setDuration(appointmentDTO.getDuration());
             appointment.setFree(true);
             appointment.setCompanyAdmin(appointmentDTO.getCompanyAdmin());
-
-            appointment = service.save(appointment);
-            if (appointment != null){
-                return new ResponseEntity<>(new PickUpAppointmentDTO(appointment), HttpStatus.CREATED);
+            if (IsWithinWorkHours(appointment)){
+                appointment = service.save(appointment);
+                if (appointment != null){
+                    return new ResponseEntity<>(new PickUpAppointmentDTO(appointment), HttpStatus.CREATED);
+                }
+            } else { // Invalid date, not within working hours
+                return new ResponseEntity<>("Invalid date. Appointments must be within working hours.", HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        else {
-            // CompanyAdmin has prior appointment, cant make another appointment at the same time
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else { // CompanyAdmin has prior appointment, cant make another appointment at the same time
+            return new ResponseEntity<>("CompanyAdmin has a prior appointment at the same time.", HttpStatus.NOT_FOUND);
         }
     }
     // check if appointment is free for that CompanyAdmin
@@ -97,6 +100,14 @@ public class PickUpAppointmentController {
             }
         }
         return true;
+    }
+    private boolean IsWithinWorkHours(PickUpAppointment appointment){
+        LocalDateTime appointmentStartDate = appointment.getDate();
+        LocalDateTime appointmentEndDate = appointment.getDate().plusHours(appointment.getDuration());
+        LocalTime startTime = appointment.getCompanyAdmin().getCompany().getStartTime();
+        LocalTime endTime = appointment.getCompanyAdmin().getCompany().getEndTime();
+
+        return !appointmentStartDate.toLocalTime().isBefore(startTime) && !appointmentEndDate.toLocalTime().isAfter(endTime);
     }
     @PutMapping(consumes = "application/json")
     public ResponseEntity<PickUpAppointmentDTO> updatePickUpAppointment(@RequestBody PickUpAppointmentDTO appointmentDTO, HttpServletRequest request) {
