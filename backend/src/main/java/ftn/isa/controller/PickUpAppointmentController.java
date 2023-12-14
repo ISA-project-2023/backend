@@ -125,12 +125,21 @@ public class PickUpAppointmentController {
         }
     }
 
+    private List<PickUpAppointment> filterOutOldDates(List<PickUpAppointment> appointments) {
+        List<PickUpAppointment> filtered = new ArrayList<>();
+        for (PickUpAppointment a : appointments) {
+            if (a.getDate().isAfter(LocalDateTime.now()) ){
+                filtered.add(a);
+            }
+        }
+        return filtered;
+    }
     @PostMapping(value = "/findByCompanyAdmin")
     public ResponseEntity<List<PickUpAppointmentDTO>> getAppointmentsByCompanyAdmins(@RequestBody CompanyAdmin companyAdmin) {
         List<PickUpAppointment> appointments = service.findByCompanyAdmin(companyAdmin);
-
+        List<PickUpAppointment> filtered = filterOutOldDates(appointments);
         List<PickUpAppointmentDTO> pickUpAppointmentsDTO = new ArrayList<>();
-        for (PickUpAppointment s : appointments) {
+        for (PickUpAppointment s : filtered) {
             pickUpAppointmentsDTO.add(new PickUpAppointmentDTO(s));
         }
         return new ResponseEntity<>(pickUpAppointmentsDTO, HttpStatus.OK);
@@ -144,9 +153,9 @@ public class PickUpAppointmentController {
             List<PickUpAppointment> adminsAppointment = service.findByCompanyAdmin(ca);
             appointments.addAll(adminsAppointment);
         }
-
+        List<PickUpAppointment> filtered = filterOutOldDates(appointments);
         List<PickUpAppointmentDTO> pickUpAppointmentsDTO = new ArrayList<>();
-        for (PickUpAppointment s : appointments) {
+        for (PickUpAppointment s : filtered) {
             pickUpAppointmentsDTO.add(new PickUpAppointmentDTO(s));
         }
         return new ResponseEntity<>(pickUpAppointmentsDTO, HttpStatus.OK);
