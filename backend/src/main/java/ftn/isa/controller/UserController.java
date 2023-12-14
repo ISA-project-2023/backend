@@ -219,6 +219,10 @@ public class UserController {
         user.setPenaltyPoints(0);
         user.setCategory(userDTO.getCategory());
 
+        String token = UUID.randomUUID().toString();
+        user.setToken(token);
+        user.setEnabled(false);
+
         user = userService.save(user);
 
         if(user != null){
