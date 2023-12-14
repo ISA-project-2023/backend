@@ -1,5 +1,6 @@
 package ftn.isa.service;
 
+import ftn.isa.domain.SystemAdmin;
 import ftn.isa.domain.User;
 import ftn.isa.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

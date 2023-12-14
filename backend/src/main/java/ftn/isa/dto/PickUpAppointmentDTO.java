@@ -11,7 +11,9 @@ public class PickUpAppointmentDTO {
     private boolean isFree;
     private CompanyAdmin companyAdmin;
 
-    public PickUpAppointmentDTO(){}
+    public PickUpAppointmentDTO(){
+        super();
+    }
 
     public PickUpAppointmentDTO(Integer id, LocalDateTime date, Integer duration, boolean isFree, CompanyAdmin companyAdmin) {
         this.id = id;
