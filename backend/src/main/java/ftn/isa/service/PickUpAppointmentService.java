@@ -3,14 +3,11 @@ package ftn.isa.service;
 import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyAdmin;
 import ftn.isa.domain.PickUpAppointment;
-import ftn.isa.domain.User;
 import ftn.isa.dto.CompanyAdminDTO;
-import ftn.isa.dto.CompanyDTO;
 import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.repository.ICompanyAdminRepository;
 import ftn.isa.repository.ICompanyRepository;
 import ftn.isa.repository.IPickUpAppointmentRepository;
-import ftn.isa.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 import java.util.List;
 @Service
 public class PickUpAppointmentService {
@@ -78,5 +76,12 @@ public class PickUpAppointmentService {
     public void remove(Integer id) {
         pickUpAppointmentRepository.deleteById(id);
     }
+
     public List<PickUpAppointment> findByCompanyAdminId(Integer companyAdmin){ return pickUpAppointmentRepository.findAllByCompanyAdminId(companyAdmin); }
+    public List<PickUpAppointment> findAllByCompanyAdminOnSameDay(CompanyAdmin companyAdmin, LocalDateTime date) {
+        LocalDateTime startDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), companyAdmin.getCompany().getStartTime().getHour(), companyAdmin.getCompany().getStartTime().getMinute(), companyAdmin.getCompany().getStartTime().getSecond());
+        LocalDateTime endDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), companyAdmin.getCompany().getEndTime().getHour(), companyAdmin.getCompany().getEndTime().getMinute(), companyAdmin.getCompany().getEndTime().getSecond());
+
+        return pickUpAppointmentRepository.findAllByCompanyAdminOnSameDay(companyAdmin, startDate, endDate);
+    }
 }
