@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,24 +55,7 @@ public class PickUpAppointmentController {
         return new ResponseEntity<>(new PickUpAppointmentDTO(appointment), HttpStatus.OK);
     }
 
-//    @PostMapping(consumes = "application/json")
-//    public ResponseEntity<PickUpAppointmentDTO> savePickUpAppointment(@RequestBody Map<String, Object> requestBody) {
-//
-//        Map<String, Object> pickUpAppointmentDTOMap = (Map<String, Object>) requestBody.get("userDTO");
-//        PickUpAppointmentDTO appointmentDTO = new PickUpAppointmentDTO((Integer) pickUpAppointmentDTOMap.get("id"),(String) pickUpAppointmentDTOMap.get("jobDescription") /*COMPANY*/);
-//
-//        PickUpAppointment appointment = new PickUpAppointment();
-//        appointment.setDate(appointmentDTO.getDate());
-//        appointment.setDuration(appointmentDTO.getDuration());
-//        appointment.setFree(appointmentDTO.isFree());
-//        appointment.setCompanyAdmin(appointmentDTO.getCompanyAdmin());
-//
-//        appointment = service.save(appointment);
-//        return new ResponseEntity<>(new PickUpAppointmentDTO(appointment), HttpStatus.CREATED);
-//    }
-    //@PostMapping(consumes = "application/json")
     @PostMapping(value = "/addNew")
-    //public ResponseEntity<?> savePickUpAppointment(@RequestBody PickUpAppointmentDTO appointmentDTO, @RequestParam String dateString) {
     public ResponseEntity<PickUpAppointmentDTO> savePickUpAppointment(@RequestBody PickUpAppointmentDTO appointmentDTO) {
         // TODO - check if appointment is free for that CompanyAdmin
         if (IsCompanyAdminFree(appointmentDTO)){
@@ -82,32 +64,39 @@ public class PickUpAppointmentController {
 
             appointment.setDate(appointmentDTO.getDate());
             appointment.setDuration(appointmentDTO.getDuration());
-            appointment.setFree(appointmentDTO.isFree());
+            appointment.setFree(true);
             appointment.setCompanyAdmin(appointmentDTO.getCompanyAdmin());
 
             appointment = service.save(appointment);
             if (appointment != null){
-                //return new ResponseEntity<>(HttpStatus.CREATED);
                 return new ResponseEntity<>(new PickUpAppointmentDTO(appointment), HttpStatus.CREATED);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         else {
-            // CompanyAdmin has prior appointment, cant make another apointment at the same time
+            // CompanyAdmin has prior appointment, cant make another appointment at the same time
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    // TODO - check if appointment is free for that CompanyAdmin
+    // check if appointment is free for that CompanyAdmin
     private boolean IsCompanyAdminFree(PickUpAppointmentDTO appointmentDTO){
+        LocalDateTime startAppointmentTime = appointmentDTO.getDate();
+        LocalDateTime endAppointmentTime = appointmentDTO.getDate().plusHours(appointmentDTO.getDuration());
+
+        List<PickUpAppointment> appointments = service.findAllByCompanyAdminOnSameDay(appointmentDTO.getCompanyAdmin(), startAppointmentTime);
+
+        for (PickUpAppointment a : appointments) {
+            LocalDateTime start = a.getDate();
+            LocalDateTime end = a.getDate().plusHours(a.getDuration());
+
+            if (start.isAfter(startAppointmentTime) && start.isBefore(endAppointmentTime)) {
+                return false;
+            }
+            if (end.isAfter(startAppointmentTime) && end.isBefore(endAppointmentTime)) {
+                return false;
+            }
+        }
         return true;
-    }
-    private LocalDateTime formatDate(String datesString) {
-        //String dateString = "2023-11-19T12:30:45";
-        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        String dateString = "19-11-2023 12:30:45";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss");
-        LocalDateTime localDateTime = LocalDateTime.parse(dateString, formatter);
-        return localDateTime;
     }
     @PutMapping(consumes = "application/json")
     public ResponseEntity<PickUpAppointmentDTO> updatePickUpAppointment(@RequestBody PickUpAppointmentDTO appointmentDTO, HttpServletRequest request) {
