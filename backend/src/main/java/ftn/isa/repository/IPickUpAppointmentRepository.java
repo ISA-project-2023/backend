@@ -8,9 +8,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 public interface IPickUpAppointmentRepository extends JpaRepository<PickUpAppointment, Integer> {
     public Page<PickUpAppointment> findAll(Pageable pageable);
+
     @Query("SELECT r FROM PickUpAppointment r WHERE r.companyAdmin.id = :id")
     public List<PickUpAppointment> findAllByCompanyAdminId(Integer id);
+
+    @Query("SELECT p FROM PickUpAppointment p " +
+            "WHERE p.companyAdmin = :companyAdmin " +
+            "AND p.date >= :startDate " +
+            "AND p.date <= :endDate")
+    public List<PickUpAppointment> findAllByCompanyAdminOnSameDay(CompanyAdmin companyAdmin, LocalDateTime startDate, LocalDateTime endDate);
 }
