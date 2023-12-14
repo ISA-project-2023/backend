@@ -1,9 +1,6 @@
 package ftn.isa.service;
 
-import ftn.isa.domain.Company;
-import ftn.isa.domain.CompanyAdmin;
-import ftn.isa.domain.PickUpAppointment;
-import ftn.isa.domain.User;
+import ftn.isa.domain.*;
 import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.dto.CompanyDTO;
 import ftn.isa.dto.PickUpAppointmentDTO;
@@ -53,7 +50,7 @@ public class PickUpAppointmentService {
                     newApp.setFree(true);
                     newApp.setDate(date.plusHours(i));
                     newApp.setDuration(2);
-                    //newApp.setCompanyAdmin(admin);
+                    newApp.setCompanyAdmin(new CompanyAdmin(admin.getId(), admin.getUsername(), "", admin.getEmail(), admin.getPenaltyPoints(), admin.getRole(), admin.getFirstName(),"", admin.getLastName(), admin.getCategory(), 0, admin.getJobDescription(), company));
                     possibleAppointments.add(new PickUpAppointmentDTO(newApp));
                 }
             }
