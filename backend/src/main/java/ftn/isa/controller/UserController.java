@@ -372,4 +372,14 @@ public class UserController {
         }
         return new ResponseEntity<>(usersDTO, HttpStatus.OK);
     }
+    @PutMapping(consumes = "application/json", value = "/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody UserDTO userDTO, @RequestParam String password){
+        User user = userService.findOne(userDTO.getId());
+        user.setPassword(password);
+        user = userService.save(user);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+    }
 }
