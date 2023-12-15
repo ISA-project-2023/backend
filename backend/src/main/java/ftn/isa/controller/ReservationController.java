@@ -72,7 +72,8 @@ public class ReservationController {
         reservation.setPickUpAppointment(pua);
 
         reservation = service.save(reservation);
-        return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED)}
+        return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);
+    }
 
     @GetMapping(value = "/findByCompanyAdmin/{id}")
     public ResponseEntity<List<ReservationDTO>> getAppointmentsByCompanyAdmins(@PathVariable Integer id) {
