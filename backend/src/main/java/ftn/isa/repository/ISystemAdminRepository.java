@@ -10,4 +10,6 @@ public interface ISystemAdminRepository extends JpaRepository<SystemAdmin, Integ
 
     @Query("SELECT s FROM SystemAdmin s WHERE s.id = :id")
     SystemAdmin find(@Param("id") Integer id);
+
+    SystemAdmin save(SystemAdmin systemAdmin);
 }

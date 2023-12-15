@@ -16,4 +16,5 @@ public class SystemAdminService {
         return systemAdminRepository.save(systemAdmin);
     }
     public SystemAdmin find(Integer id){return systemAdminRepository.find(id);}
+    public SystemAdmin update(SystemAdmin systemAdmin){return systemAdminRepository.save(systemAdmin);}
 }

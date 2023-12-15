@@ -62,7 +62,7 @@ public class UserController {
             session.setAttribute("user", authenticatedUser);
             if (loggedinCustomer != null){
                 session.setAttribute("customer", loggedinCustomer);
-            } else if (loggedinCustomer == null){
+            } else if (loggedinCompanyAdmin != null){
                 session.setAttribute("companyAdmin", loggedinCompanyAdmin);
             } else if (loggedinSystemAdmin != null){
                 session.setAttribute("systemAdmin", loggedinSystemAdmin);
@@ -265,14 +265,14 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping(consumes = "application/json")
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, HttpServletRequest request) {
-        User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
+    @PutMapping(value="/updateSystemAdmin",consumes = "application/json")
+    public ResponseEntity<SystemAdminDTO> updateSystemAdmin(@RequestBody SystemAdminDTO userDTO, HttpServletRequest request) {
+        /*SystemAdmin loggedInSystemAdmin = (session != null) ? (SystemAdmin) session.getAttribute("systemAdmin") : null;
 
-        if (loggedInUser == null || !loggedInUser.getId().equals(userDTO.getId())) {
+        if (loggedInSystemAdmin == null || !loggedInSystemAdmin.getId().equals(userDTO.getId())) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        User user = customerService.find(userDTO.getId());
+        }*/
+        SystemAdmin user = systemAdminService.find(userDTO.getId());
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -280,10 +280,10 @@ public class UserController {
         user.setRole(userDTO.getRole());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
-
-        user = userService.save(user);
-        session.setAttribute("user", user);
-        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+        user.setActivated(userDTO.getIsActivated());
+        user = systemAdminService.save(user);
+        session.setAttribute("systemAdmin", user);
+        return new ResponseEntity<>(new SystemAdminDTO(user), HttpStatus.OK);
     }
 
     @PutMapping(path="/customer", consumes = "application/json")
