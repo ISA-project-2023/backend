@@ -77,7 +77,7 @@ public class ReservationController {
         String subject = "Reservation Confirmation";
         String body = generateEmailBody(reservationDto);
 
-        // Include reservation details in the QR code
+        // Reservation details in the QR code
         String qrCodeText = generateQRCodeText(reservationDto);
 
         try {
@@ -86,6 +86,7 @@ public class ReservationController {
             reservation = service.save(reservation);
         } catch (MessagingException e) {
             System.out.println("Exception sending email: " + e.toString());
+            return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);
@@ -118,13 +119,11 @@ public class ReservationController {
         return mail.toString();
     }
 
-
     private String getCustomerName(User customer) {
         if (customer instanceof Customer) {
             Customer customerObj = (Customer) customer;
             return customerObj.getFirstName() + " " + customerObj.getLastName();
         } else {
-            // Handle the case where the provided user is not a Customer
             return "Valued Customer";
         }
     }
@@ -143,7 +142,6 @@ public class ReservationController {
         for (Equipment e : equipmentList) {
             equipmentDetails.append(e.getName()).append(" (").append(e.getDescription()).append("), ");
         }
-        // Remove the trailing comma and space
         if (equipmentDetails.length() > 0) {
             equipmentDetails.setLength(equipmentDetails.length() - 2);
         }
