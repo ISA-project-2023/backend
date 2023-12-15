@@ -21,7 +21,7 @@ public class ReservationDTO {
         this.equipment = equipment;
     }
     public ReservationDTO(Reservation reservation){
-        this(reservation.getId(), reservation.getPickUpAppointment(), reservation.getCustomer(), reservation.getStatus(), reservation. getCompany(), reservation.getEquipment());
+        this(reservation.getId(), reservation.getPickUpAppointment(), reservation.getCustomer(), reservation.getStatus(), reservation.getCompany(), reservation.getEquipment());
     }
 
     public Integer getId() {

@@ -1,30 +1,22 @@
-package ftn.isa.domain;
+package ftn.isa.dto;
 
-import javax.persistence.*;
+import ftn.isa.domain.*;
 
-@Entity
-@Table(name="\"complaintAboutCompany\"")
-public class ComplaintAboutCompany {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ComplaintAboutCompanyDTO {
+
     private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "companyId", referencedColumnName = "id")
     private Company company;
-
-    @Column(name="text", nullable = false)
     private String text;
-
-    @ManyToOne
-    @JoinColumn(name = "employeeId", referencedColumnName = "id")
     private Customer customer;
-
-    @Column(name="isAnswered", nullable = false)
     private boolean isAnswered = false;
-    public ComplaintAboutCompany(){super();}
 
-    public ComplaintAboutCompany(int id, Company company, String text, Customer customer, boolean isAnswered) {
+    public ComplaintAboutCompanyDTO(ComplaintAboutCompany c){
+        this.company = c.getCompany();
+        this.text = c.getText();
+        this.customer = c.getCustomer();
+        this.isAnswered = c.isAnswered();
+    }
+    public ComplaintAboutCompanyDTO(int id, Company company, String text, Customer customer, boolean isAnswered) {
         this.id = id;
         this.company = company;
         this.text = text;

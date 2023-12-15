@@ -1,9 +1,13 @@
 package ftn.isa.controller;
 
+import ftn.isa.domain.CompanyAdmin;
 import ftn.isa.domain.PickUpAppointment;
 import ftn.isa.domain.Reservation;
-import ftn.isa.domain.ReservationStatus;
+import ftn.isa.dto.CompanyAdminDTO;
+import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.dto.ReservationDTO;
+import ftn.isa.service.CompanyAdminService;
+import ftn.isa.domain.ReservationStatus;
 import ftn.isa.service.PickUpAppointmentService;
 import ftn.isa.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,5 +73,17 @@ public class ReservationController {
 
         reservation = service.save(reservation);
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/findByCompanyAdmin/{id}")
+    public ResponseEntity<List<ReservationDTO>> getAppointmentsByCompanyAdmins(@PathVariable Integer id) {
+        List<Reservation> reservations = service.findByCompanyAdminId(id);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        List<ReservationDTO> reservationsDTO = new ArrayList<>();
+        for (Reservation r : reservations) {
+
+            reservationsDTO.add(new ReservationDTO(r));
+        }
+        return new ResponseEntity<>(reservationsDTO, HttpStatus.OK);
     }
 }

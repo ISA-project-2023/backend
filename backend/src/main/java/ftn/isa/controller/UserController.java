@@ -1,16 +1,11 @@
 package ftn.isa.controller;
 
-import ftn.isa.domain.Customer;
-import ftn.isa.domain.User;
-import ftn.isa.domain.UserRole;
-import ftn.isa.domain.CompanyAdmin;
+import ftn.isa.domain.*;
 import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.dto.CustomerDTO;
+import ftn.isa.dto.SystemAdminDTO;
 import ftn.isa.dto.UserDTO;
-import ftn.isa.service.EmailService;
-import ftn.isa.service.CustomerService;
-import ftn.isa.service.UserService;
-import ftn.isa.service.CompanyAdminService;
+import ftn.isa.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -38,6 +33,8 @@ public class UserController {
     @Autowired
     private CompanyAdminService companyAdminService;
     @Autowired
+    private SystemAdminService systemAdminService;
+    @Autowired
     private  HttpSession session;
     @Autowired
     private EmailService emailService;
@@ -48,13 +45,14 @@ public class UserController {
         String password = loginRequest.get("password");
         Customer loggedinCustomer = null;
         CompanyAdmin loggedinCompanyAdmin = null;
+        SystemAdmin loggedinSystemAdmin = null;
         User authenticatedUser = userService.authenticate(username, password);
         if (authenticatedUser.getRole() == UserRole.COMPANY_ADMIN){
             loggedinCompanyAdmin = companyAdminService.findOne(authenticatedUser.getId());
         } else if (authenticatedUser.getRole() == UserRole.CUSTOMER){
             loggedinCustomer = customerService.find(authenticatedUser.getId());
         } else if (authenticatedUser.getRole() == UserRole.SYSTEM_ADMIN){
-            //TODO
+            loggedinSystemAdmin =  systemAdminService.find(authenticatedUser.getId());
         } else {
             return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
@@ -66,8 +64,9 @@ public class UserController {
                 session.setAttribute("customer", loggedinCustomer);
             } else if (loggedinCustomer == null){
                 session.setAttribute("companyAdmin", loggedinCompanyAdmin);
-            } //TODO
-            // else if (){}
+            } else if (loggedinSystemAdmin != null){
+                session.setAttribute("systemAdmin", loggedinSystemAdmin);
+            }
             String sessionId = session.getId();
 
             Cookie cookie = new Cookie("JSESSIONID", sessionId);
@@ -100,6 +99,14 @@ public class UserController {
         if(session!=null){
             User user = (User) session.getAttribute("user");
             return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    @GetMapping("/current-systemAdmin")
+    public ResponseEntity<SystemAdminDTO> getCurrentSystemAdmin(HttpServletRequest request){
+        if(session!=null){
+            SystemAdmin systemAdmin = (SystemAdmin) session.getAttribute("systemAdmin");
+            return new ResponseEntity<>(new SystemAdminDTO(systemAdmin), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -206,6 +213,33 @@ public class UserController {
                 "<p>Best regards,<br/>ISA project members</p>";
     }
     @PostMapping(value = "/store", consumes = "application/json")
+    public ResponseEntity<?> saveSystemAdmin(@RequestBody SystemAdminDTO userDTO, @RequestParam String password) {
+
+        SystemAdmin user = new SystemAdmin();
+
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(password);
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setRole(userDTO.getRole());
+        user.setEmail(userDTO.getEmail());
+        user.setPenaltyPoints(0);
+        user.setCategory(userDTO.getCategory());
+        user.setActivated(userDTO.getIsActivated());
+
+        String token = UUID.randomUUID().toString();
+        user.setToken(token);
+        user.setEnabled(false);
+
+        user = systemAdminService.save(user);
+
+        if(user != null){
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping(value = "/saveSystemAdmin", consumes = "application/json")
     public ResponseEntity<?> storeUser(@RequestBody UserDTO userDTO, @RequestParam String password) {
 
         User user = new User();
@@ -218,6 +252,10 @@ public class UserController {
         user.setEmail(userDTO.getEmail());
         user.setPenaltyPoints(0);
         user.setCategory(userDTO.getCategory());
+
+        String token = UUID.randomUUID().toString();
+        user.setToken(token);
+        user.setEnabled(false);
 
         user = userService.save(user);
 
