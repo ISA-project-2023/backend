@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping(value = "api/users/companyAdmins")
+@RequestMapping(value = "api/companyAdmins")
 public class CompanyAdminController {
     @Autowired
     private CompanyAdminService companyAdminService;
@@ -56,11 +56,12 @@ public class CompanyAdminController {
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO, @RequestParam String password) {
+    @PostMapping(consumes = "application/json",value = "/{password}")
+    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO, @PathVariable String password) {
 
         CompanyAdmin admin = new CompanyAdmin();
 
+        admin.setId(adminDTO.getId());
         admin.setFirstName(adminDTO.getFirstName());
         admin.setLastName(adminDTO.getLastName());
         admin.setUsername(adminDTO.getUsername());
