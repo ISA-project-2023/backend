@@ -1,7 +1,10 @@
 package ftn.isa.controller;
 
 import ftn.isa.domain.Company;
+import ftn.isa.domain.CompanyEquipment;
+import ftn.isa.domain.Equipment;
 import ftn.isa.dto.CompanyDTO;
+import ftn.isa.service.CompanyEquipmentService;
 import ftn.isa.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +17,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -21,6 +25,9 @@ import java.util.List;
 public class CompanyController {
     @Autowired
     private CompanyService companyService;
+    @Autowired
+    private CompanyEquipmentService companyEquipmentService;
+
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
@@ -80,7 +87,7 @@ public class CompanyController {
         return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.CREATED);
     }
     @PutMapping(consumes = "application/json")
-    public ResponseEntity<CompanyDTO> updateCompany(@RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<CompanyDTO> updateCompanyInfo(@RequestBody CompanyDTO companyDTO) {
         Company company = companyService.findOne(companyDTO.getId());
         if (company == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -96,6 +103,41 @@ public class CompanyController {
         company = companyService.save(company);
         return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.OK);
     }
+
+    @PutMapping(consumes = "application/json", value = "/equipment-update")
+    public ResponseEntity<CompanyDTO> updateCompanyEquipment(@RequestBody CompanyDTO companyDTO) {
+        Company company = companyService.findOne(companyDTO.getId());
+        if (company == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Set<Equipment> updatedEquipmentSet = companyDTO.getEquipment();
+        //Set<Equipment> existingCompanyEquipmentList = company.getEquipments();
+        List<CompanyEquipment> existingCompanyEquipmentList = companyEquipmentService.findAllByCompany(company);
+
+        // Remove equipment that is not in the updated set
+        existingCompanyEquipmentList.forEach(companyEquipment -> {
+            if (!updatedEquipmentSet.contains(companyEquipment.getEquipment())) {
+                companyEquipmentService.remove(companyEquipment.getId());
+            }
+        });
+        // Add new equipment entries
+        Company finalCompany = company;
+        updatedEquipmentSet.forEach(updatedEquipment -> {
+            if (!containsEquipment(existingCompanyEquipmentList, updatedEquipment)) {
+                CompanyEquipment newCompanyEquipment = new CompanyEquipment(finalCompany, updatedEquipment);
+                companyEquipmentService.save(newCompanyEquipment);
+            }
+        });
+        company.setEquipments(companyDTO.getEquipment());
+        //company = companyService.save(company);
+        return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.OK);
+    }
+    private boolean containsEquipment(List<CompanyEquipment> companyEquipmentList, Equipment equipment) {
+        return companyEquipmentList.stream()
+                .anyMatch(companyEquipment -> companyEquipment.getEquipment().equals(equipment));
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable Integer id) {
         Company company = companyService.findOne(id);
