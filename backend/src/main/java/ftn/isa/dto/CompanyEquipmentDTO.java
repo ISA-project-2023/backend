@@ -11,7 +11,7 @@ public class CompanyEquipmentDTO {
     public EquipmentDTO getEquipment() { return equipment; }
 
     public CompanyEquipmentDTO(CompanyEquipment companyEquipment) {
-        this.id = companyEquipment.getId();
+        //this.id = companyEquipment.getId();
         this.company = new CompanyDTO(companyEquipment.getCompany());
         this.equipment = new EquipmentDTO(companyEquipment.getEquipment());
     }

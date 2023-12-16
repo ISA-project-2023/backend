@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -47,15 +46,6 @@ public class CompanyController {
         }
         return new ResponseEntity<>(companiesDTO, HttpStatus.OK);
     }
-//    @GetMapping(value = "/{name}")
-//    public ResponseEntity<List<CompanyDTO>> getCompaniesByName(@PathVariable String name) {
-//        List<Company> companies = companyService.findByName(name);
-//        List<CompanyDTO> companiesDTO = new ArrayList<>();
-//        for (Company s : companies) {
-//            companiesDTO.add(new CompanyDTO(s));
-//        }
-//        return new ResponseEntity<>(companiesDTO, HttpStatus.OK);
-//    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<CompanyDTO> getCompany(@PathVariable Integer id) {
@@ -104,15 +94,13 @@ public class CompanyController {
         return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.OK);
     }
 
-    @PutMapping(consumes = "application/json", value = "/equipment-update")
+    @PostMapping(consumes = "application/json", value = "/equipment-update")
     public ResponseEntity<CompanyDTO> updateCompanyEquipment(@RequestBody CompanyDTO companyDTO) {
         Company company = companyService.findOne(companyDTO.getId());
         if (company == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         Set<Equipment> updatedEquipmentSet = companyDTO.getEquipment();
-        //Set<Equipment> existingCompanyEquipmentList = company.getEquipments();
         List<CompanyEquipment> existingCompanyEquipmentList = companyEquipmentService.findAllByCompany(company);
 
         // Remove equipment that is not in the updated set
@@ -130,7 +118,6 @@ public class CompanyController {
             }
         });
         company.setEquipments(companyDTO.getEquipment());
-        //company = companyService.save(company);
         return new ResponseEntity<>(new CompanyDTO(company), HttpStatus.OK);
     }
     private boolean containsEquipment(List<CompanyEquipment> companyEquipmentList, Equipment equipment) {

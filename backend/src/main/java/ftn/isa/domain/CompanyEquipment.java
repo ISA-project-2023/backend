@@ -1,24 +1,21 @@
 package ftn.isa.domain;
 
-import ftn.isa.domain.Company;
-import ftn.isa.domain.Equipment;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "\"company_equipment\"")
 public class CompanyEquipment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @EmbeddedId
+    private CompanyEquipmentId id;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @MapsId("companyId")
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 
     @ManyToOne
-    @JoinColumn(name = "equipment_id")
+    @MapsId("equipmentId")
+    @JoinColumn(name = "equipment_id", referencedColumnName = "id")
     private Equipment equipment;
 
     // Add any additional fields related to this relationship
@@ -30,18 +27,10 @@ public class CompanyEquipment {
     public CompanyEquipment(Company company, Equipment equipment) {
         this.company = company;
         this.equipment = equipment;
+        this.id = new CompanyEquipmentId(company.getId(), equipment.getId());
     }
 
-    // Getters and setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
+    public CompanyEquipmentId getId() { return id; }
     public Company getCompany() {
         return company;
     }
