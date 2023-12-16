@@ -212,7 +212,7 @@ public class UserController {
                 "<p>If you have any questions, feel free to contact our support team.</p>\n" +
                 "<p>Best regards,<br/>ISA project members</p>";
     }
-    @PostMapping(value = "/store", consumes = "application/json")
+    @PostMapping(value = "/saveSystemAdmin", consumes = "application/json")
     public ResponseEntity<?> saveSystemAdmin(@RequestBody SystemAdminDTO userDTO, @RequestParam String password) {
 
         SystemAdmin user = new SystemAdmin();
@@ -229,7 +229,7 @@ public class UserController {
 
         String token = UUID.randomUUID().toString();
         user.setToken(token);
-        user.setEnabled(false);
+        user.setEnabled(true);
 
         user = systemAdminService.save(user);
 
@@ -239,7 +239,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping(value = "/saveSystemAdmin", consumes = "application/json")
+    @PostMapping(value = "/store", consumes = "application/json")
     public ResponseEntity<?> storeUser(@RequestBody UserDTO userDTO, @RequestParam String password) {
 
         User user = new User();
@@ -266,23 +266,14 @@ public class UserController {
     }
 
     @PutMapping(value="/updateSystemAdmin",consumes = "application/json")
-    public ResponseEntity<SystemAdminDTO> updateSystemAdmin(@RequestBody SystemAdminDTO userDTO, HttpServletRequest request) {
-        /*SystemAdmin loggedInSystemAdmin = (session != null) ? (SystemAdmin) session.getAttribute("systemAdmin") : null;
-
-        if (loggedInSystemAdmin == null || !loggedInSystemAdmin.getId().equals(userDTO.getId())) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }*/
-        SystemAdmin user = systemAdminService.find(userDTO.getId());
+    public ResponseEntity<SystemAdminDTO> updateSystemAdmin(@RequestBody Integer id) {
+        SystemAdmin user = systemAdminService.find(id);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        user.setPenaltyPoints(userDTO.getPenaltyPoints());
-        user.setRole(userDTO.getRole());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setActivated(userDTO.getIsActivated());
-        user = systemAdminService.save(user);
-        session.setAttribute("systemAdmin", user);
+        user.setActivated(true);
+        SystemAdmin systemAdmin = systemAdminService.save(user);
+        session.setAttribute("systemAdmin", systemAdmin);
         return new ResponseEntity<>(new SystemAdminDTO(user), HttpStatus.OK);
     }
 
