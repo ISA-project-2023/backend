@@ -84,37 +84,37 @@ INSERT INTO public.pick_up_appointment(
 	id, company_admin_id, date, duration,  is_free)
 VALUES 
     -- Company Admin 101
-    (101, 101, '2023-12-30 10:00:00', 1, true),
-    (102, 101, '2023-12-30 12:00:00', 2, true),
-    (103, 101, '2023-12-30 16:00:00', 1, true),
+    (101, 101, '2023-11-30 10:00:00', 1, true),
+    (102, 101, '2023-11-30 12:00:00', 2, true),
+    (103, 101, '2023-11-30 16:00:00', 1, true),
     (104, 101, '2024-01-02 10:00:00', 1, true),
     (105, 101, '2024-01-02 12:00:00', 2, true),
 
     -- Company Admin 102
-    (106, 102, '2023-12-30 10:00:00', 1, true),
-    (107, 102, '2023-12-30 12:00:00', 2, true),
-    (108, 102, '2023-12-30 16:00:00', 1, true),
+    (106, 102, '2023-11-30 10:00:00', 1, true),
+    (107, 102, '2023-11-30 12:00:00', 2, true),
+    (108, 102, '2023-11-30 16:00:00', 1, true),
     (109, 102, '2024-01-02 10:00:00', 1, true),
     (110, 102, '2024-01-02 12:00:00', 2, true),
 
     -- Company Admin 103
-    (111, 103, '2023-12-30 10:00:00', 1, true),
-    (112, 103, '2023-12-30 12:00:00', 2, true),
-    (113, 103, '2023-12-30 16:00:00', 1, true),
+    (111, 103, '2023-11-30 10:00:00', 1, true),
+    (112, 103, '2023-11-30 12:00:00', 2, true),
+    (113, 103, '2023-11-30 16:00:00', 1, true),
     (114, 103, '2024-01-02 10:00:00', 1, true),
     (115, 103, '2024-01-02 12:00:00', 2, true),
 
     -- Company Admin 104
-    (116, 104, '2023-12-30 10:00:00', 1, true),
-    (117, 104, '2023-12-30 12:00:00', 2, true),
-    (118, 104, '2023-12-30 16:00:00', 1, true),
+    (116, 104, '2023-11-30 10:00:00', 1, true),
+    (117, 104, '2023-11-30 12:00:00', 2, true),
+    (118, 104, '2023-11-30 16:00:00', 1, true),
     (119, 104, '2024-01-02 10:00:00', 1, true),
     (120, 104, '2024-01-02 12:00:00', 2, true),
 
     -- Company Admin 105
-    (121, 105, '2023-12-30 10:00:00', 1, true),
-    (122, 105, '2023-12-30 12:00:00', 2, true),
-    (123, 105, '2023-12-30 16:00:00', 1, true),
+    (121, 105, '2023-11-30 10:00:00', 1, true),
+    (122, 105, '2023-11-30 12:00:00', 2, true),
+    (123, 105, '2023-11-30 16:00:00', 1, true),
     (124, 105, '2024-01-02 10:00:00', 1, true),
     (125, 105, '2024-01-02 12:00:00', 2, true);
 
@@ -124,17 +124,11 @@ VALUES
 INSERT INTO public.pick_up_appointment(
 	id, company_admin_id, date, duration,  is_free)
 VALUES 
-	(501, 102, '2023-12-29 12:00:00', 2, false),
-	(502, 102, '2022-12-30 14:00:00', 2, false),
+	(501, 102, '2023-11-29 12:00:00', 2, false),
+	(502, 102, '2022-11-30 14:00:00', 2, false),
 	(503, 102, '2024-1-1 16:00:00', 2, false),
 	(504, 103, '2024-1-2 12:00:00', 2, false);
 
 -- Reservations
-INSERT INTO public.reservation(
-	id, employee_id, pick_up_appointment_id, company_id, status, equipment)
-VALUES 
-	(101, 201, 501, 101, 'PENDING', '{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}'),
-	(102, 201, 502, 101, 'PENDING', '{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}'),
-	(103, 202, 503, 101, 'PENDING', '{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}'),
-	(104, 202, 504, 102, 'PENDING', '{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}');
+INSERT INTO public.reservation( id, employee_id, pick_up_appointment_id, company_id, status, equipment) VALUES (101, 201, 501, 101, 'PENDING', '[{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}]'), (102, 201, 502, 101, 'PENDING', '[{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}]'), (103, 202, 503, 101, 'PENDING', '[{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}]'), (104, 202, 504, 102, 'PENDING', '[{"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}]'); 
 */
