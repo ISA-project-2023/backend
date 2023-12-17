@@ -12,20 +12,26 @@ public class CompanyAdmin extends User {
     @JoinColumn(name = "companyId", referencedColumnName = "id")
     private Company company;
 
+    @Column(name = "isVerified", nullable = false)
+    private boolean isVerified;
+
     public CompanyAdmin() { super(); }
 
-    public CompanyAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, String jobDescription, Company company) {
+    public CompanyAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, String jobDescription, Company company, boolean verified) {
         super(id, username, password, email, penaltyPoints, role, firstName, lastName, category);
-        //this.id = id1;
         this.jobDescription = jobDescription;
         this.company = company;
+        this.isVerified = verified;
     }
-    public CompanyAdmin(User user, Integer id, String jobDescription, Company company){
+    public CompanyAdmin(User user, Integer id, String jobDescription, Company company, boolean verified){
         super(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory());
-        //this.id = id;
         this.jobDescription = jobDescription;
         this.company = company;
+        this.isVerified = verified;
     }
+
+    public boolean isVerified() { return isVerified; }
+    public void setVerified(boolean verified) { isVerified = verified; }
 
     public String getJobDescription() {
         return jobDescription;
@@ -61,6 +67,6 @@ public class CompanyAdmin extends User {
 
     @Override
     public String toString() {
-        return "CompanyAdmin [id= "+ getId() +", company= " + company + ", job: " + jobDescription + "]";
+        return "CompanyAdmin [id= "+ getId() +", company= " + company + ", job: " + jobDescription + ", is verified: " + isVerified + "]";
     }
 }

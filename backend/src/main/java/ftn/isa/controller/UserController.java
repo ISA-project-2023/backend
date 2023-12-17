@@ -90,7 +90,10 @@ public class UserController {
     public ResponseEntity<CompanyAdminDTO> getCurrentCompanyAdmin(HttpServletRequest request){
         if(session!=null){
             CompanyAdmin admin = (CompanyAdmin) session.getAttribute("companyAdmin");
-            return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
+            if(admin != null){
+                return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -98,7 +101,10 @@ public class UserController {
     public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
         if(session!=null){
             User user = (User) session.getAttribute("user");
-            return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+            if(user != null){
+                return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -368,6 +374,16 @@ public class UserController {
         User user = userService.findOne(userDTO.getId());
         user.setPassword(password);
         user = userService.save(user);
+
+        if (user.getRole().toString().equals("COMPANY_ADMIN")){
+            CompanyAdmin companyAdmin = companyAdminService.findOne(user.getId());
+            if (companyAdmin == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            companyAdmin.setVerified(true);
+            companyAdmin = companyAdminService.save(companyAdmin);
+        }
+
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

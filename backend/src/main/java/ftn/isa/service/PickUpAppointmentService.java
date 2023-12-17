@@ -51,7 +51,7 @@ public class PickUpAppointmentService {
                     newApp.setFree(true);
                     newApp.setDate(date.plusHours(i));
                     newApp.setDuration(2);
-                    newApp.setCompanyAdmin(new CompanyAdmin(admin.getId(), admin.getUsername(), "", admin.getEmail(), admin.getPenaltyPoints(), admin.getRole(), admin.getFirstName(),"", admin.getLastName(), admin.getCategory(), 0, admin.getJobDescription(), company));
+                    newApp.setCompanyAdmin(new CompanyAdmin(admin.getId(), admin.getUsername(), "", admin.getEmail(), admin.getPenaltyPoints(), admin.getRole(), admin.getFirstName(),"", admin.getLastName(), admin.getCategory(), 0, admin.getJobDescription(), company, admin.isVerified()));
                     possibleAppointments.add(new PickUpAppointmentDTO(newApp));
                 }
             }

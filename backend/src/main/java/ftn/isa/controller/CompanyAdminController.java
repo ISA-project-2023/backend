@@ -80,6 +80,7 @@ public class CompanyAdminController {
 
         admin.setJobDescription(adminDTO.getJobDescription());
         admin.setCompany(adminDTO.getCompany());
+        admin.setVerified(false);
 
         admin = companyAdminService.save(admin);
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
