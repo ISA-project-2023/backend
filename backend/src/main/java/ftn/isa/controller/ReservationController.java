@@ -25,12 +25,12 @@ import java.util.List;
 public class ReservationController {
     @Autowired
     private ReservationService service;
-
     @Autowired
     private PickUpAppointmentService pickupService;
-
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PickUpAppointmentService pickUpAppointmentService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationDTO>> getAllReservations() {
@@ -41,6 +41,27 @@ public class ReservationController {
         }
         return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
     }
+
+    @PutMapping(value = "/cancel/{id}")
+    public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable Integer id) {
+        Reservation r = service.getOne(id);
+
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        PickUpAppointment appointment = pickUpAppointmentService.cancel(r.getPickUpAppointment().getId());
+
+        if (appointment == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Reservation res = service.cancel(id);
+
+        return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
+    }
+
+
 
     @GetMapping(value = "/allByCustomer/{id}")
     public ResponseEntity<List<ReservationDTO>> getAllByCustomer(@PathVariable Integer id) {

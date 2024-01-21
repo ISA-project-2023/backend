@@ -3,11 +3,13 @@ package ftn.isa.service;
 import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyAdmin;
 import ftn.isa.domain.PickUpAppointment;
+import ftn.isa.domain.Reservation;
 import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.repository.ICompanyAdminRepository;
 import ftn.isa.repository.ICompanyRepository;
 import ftn.isa.repository.IPickUpAppointmentRepository;
+import ftn.isa.repository.IReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +26,7 @@ public class PickUpAppointmentService {
     @Autowired
     private ICompanyAdminRepository companyAdminRepository;
     @Autowired
-    private ICompanyRepository companyRepository;
+    private IReservationRepository reservationRepository;
     public PickUpAppointment findOne(Integer id) { return pickUpAppointmentRepository.findById(id).orElseGet(null); }
     public List<PickUpAppointment> findAll() {
         return pickUpAppointmentRepository.findAll();
@@ -73,6 +75,11 @@ public class PickUpAppointmentService {
         return pickUpAppointmentRepository.findAll(page);
     }
     public PickUpAppointment save(PickUpAppointment pickUpAppointment) { return pickUpAppointmentRepository.save(pickUpAppointment); }
+    public PickUpAppointment cancel(int pickUpAppointmentId) {
+        PickUpAppointment app = findOne(pickUpAppointmentId);
+        app.setFree(true);
+        return save(app);
+    }
     public void remove(Integer id) {
         pickUpAppointmentRepository.deleteById(id);
     }

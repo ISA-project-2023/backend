@@ -1,11 +1,7 @@
 package ftn.isa.service;
 
-import ftn.isa.domain.CompanyAdmin;
-import ftn.isa.domain.PickUpAppointment;
-import ftn.isa.domain.Reservation;
+import ftn.isa.domain.*;
 import ftn.isa.repository.IPickUpAppointmentRepository;
-import ftn.isa.domain.Company;
-import ftn.isa.domain.Customer;
 import ftn.isa.repository.IReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +17,7 @@ public class ReservationService {
     public Reservation save(Reservation reservation){
         return reservationRepository.save(reservation);
     }
+    public Reservation getOne(int id){ return reservationRepository.findById(id).orElseGet(null); }
     public List<Reservation> getAll(){
         return reservationRepository.findAll();
     }
@@ -40,4 +37,13 @@ public class ReservationService {
     }
 
     public List<Reservation> findByCompanyAdminId(Integer id){ return reservationRepository.findAllByPickUpAppointmentCompanyAdminId(id); }
+
+    public Reservation cancel(Integer id) {
+        Reservation r = getOne(id);
+        if (r != null) {
+            r.setStatus(ReservationStatus.CANCELED);
+            return save(r);
+        }
+        return null;
+    }
 }
