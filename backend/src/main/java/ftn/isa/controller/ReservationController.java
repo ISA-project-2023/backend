@@ -4,10 +4,7 @@ import ftn.isa.domain.*;
 import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.dto.ReservationDTO;
-import ftn.isa.service.CompanyAdminService;
-import ftn.isa.service.EmailService;
-import ftn.isa.service.PickUpAppointmentService;
-import ftn.isa.service.ReservationService;
+import ftn.isa.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +29,8 @@ public class ReservationController {
     private EmailService emailService;
     @Autowired
     private PickUpAppointmentService pickUpAppointmentService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationDTO>> getAllReservations() {
@@ -58,8 +58,26 @@ public class ReservationController {
 
         Reservation res = service.cancel(id);
 
+        User user = userService.findOne(res.getCustomer().getId());
+        int penaltyPoints = user.getPenaltyPoints();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime appointmentDate = appointment.getDate();
+
+        long hoursDifference = ChronoUnit.HOURS.between(now, appointmentDate);
+
+        if (hoursDifference < 24) {
+            penaltyPoints += 2;
+        } else {
+            penaltyPoints++;
+        }
+
+        user.setPenaltyPoints(penaltyPoints);
+        userService.save(user);
+
         return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
     }
+
 
 
 
