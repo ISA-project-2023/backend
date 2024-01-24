@@ -173,7 +173,7 @@ public class ReservationController {
                 + "Company: " + reservationDto.getCompany().getName() + "\n"
                 + "Customer: " + customerName + "\n"
                 + "Equipment: " + getEquipmentDetails(reservationDto.getEquipment()) + "\n"
-                + "Pick-up Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
+                + "Pick-up-Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
     }
 
     private String getEquipmentDetails(List<Equipment> equipmentList) {
@@ -194,7 +194,6 @@ public class ReservationController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         List<ReservationDTO> reservationsDTO = new ArrayList<>();
         for (Reservation r : reservations) {
-
             reservationsDTO.add(new ReservationDTO(r));
         }
         return new ResponseEntity<>(reservationsDTO, HttpStatus.OK);
