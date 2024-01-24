@@ -78,7 +78,42 @@ public class ReservationController {
         return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
     }
 
+    @PutMapping(value = "/markAsPicked/{id}", consumes = "application/json")
+    public ResponseEntity<ReservationDTO> deliverReservation(@PathVariable Integer id, @RequestBody ReservationDTO reservationDto) {
+        Reservation r = service.getOne(id);
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Reservation res = service.pickUp(id);
 
+        String to = r.getCustomer().getEmail();
+        String subject = "Equipment successfully delivered!";
+        String body = generateDeliveringConfirmationEmail(reservationDto);
+
+        try {
+            emailService.send(to, body, subject);
+            System.out.println("Reservation delivering email sent successfully!");
+        } catch (MessagingException e) {
+            System.out.println("Exception sending email: " + e.toString());
+            return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/markAsExpired/{id}")
+    public ResponseEntity<ReservationDTO> expiredReservation(@PathVariable Integer id) {
+        Reservation r = service.getOne(id);
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Reservation res = service.expired(id);
+        User user = userService.findOne(res.getCustomer().getId());
+        int penaltyPoints = user.getPenaltyPoints();
+        penaltyPoints += 2;
+        user.setPenaltyPoints(penaltyPoints);
+        userService.save(user);
+        return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
+    }
 
 
     @GetMapping(value = "/allByCustomer/{id}")
@@ -158,6 +193,31 @@ public class ReservationController {
         return mail.toString();
     }
 
+    private String generateDeliveringConfirmationEmail(ReservationDTO reservation) {
+        String customerName = getCustomerName(reservation.getCustomer());
+
+        StringBuilder mail = new StringBuilder("<html>"
+                + "<body>"
+                + "<p>Dear " + customerName + ",</p>"
+                + "<p>Thank you for your trust. Your order was succesfully delivered. Here are the details:</p>"
+                + "<ul>"
+                + "<li><strong>Company:</strong> " + reservation.getCompany().getName() + "</li>"
+                + "<li><strong>Equipment:</strong> <br/>");
+
+        for (Equipment e : reservation.getEquipment()) {
+            mail.append(e.getName()).append(" (").append(e.getDescription()).append(")").append("<br/>");
+        }
+
+        mail.append("</li>")
+                .append("<li><strong>Pick-up Date:</strong> ").append(reservation.getPickUpAppointment().getDate().toString().replace("T", " ")).append("</li>")
+                .append("</ul>")
+                .append("<p>Best regards,<br/>The Isa Project Team</p>")
+                .append("</body>")
+                .append("</html>");
+
+        return mail.toString();
+    }
+
     private String getCustomerName(User customer) {
         if (customer instanceof Customer) {
             Customer customerObj = (Customer) customer;
@@ -173,7 +233,7 @@ public class ReservationController {
                 + "Company: " + reservationDto.getCompany().getName() + "\n"
                 + "Customer: " + customerName + "\n"
                 + "Equipment: " + getEquipmentDetails(reservationDto.getEquipment()) + "\n"
-                + "Pick-up Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
+                + "Pick-up-Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
     }
 
     private String getEquipmentDetails(List<Equipment> equipmentList) {
@@ -194,7 +254,6 @@ public class ReservationController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         List<ReservationDTO> reservationsDTO = new ArrayList<>();
         for (Reservation r : reservations) {
-
             reservationsDTO.add(new ReservationDTO(r));
         }
         return new ResponseEntity<>(reservationsDTO, HttpStatus.OK);

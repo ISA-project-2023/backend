@@ -38,6 +38,15 @@ public class ReservationService {
 
     public List<Reservation> findByCompanyAdminId(Integer id){ return reservationRepository.findAllByPickUpAppointmentCompanyAdminId(id); }
 
+    public Reservation pickUp(Integer id) {
+        Reservation r = getOne(id);
+        if (r != null) {
+            r.setStatus(ReservationStatus.PICKED_UP);
+            return save(r);
+        }
+        return null;
+    }
+
     public Reservation cancel(Integer id) {
         Reservation r = getOne(id);
         if (r != null) {
@@ -46,4 +55,14 @@ public class ReservationService {
         }
         return null;
     }
+
+    public Reservation expired(Integer id) {
+        Reservation r = getOne(id);
+        if (r != null) {
+            r.setStatus(ReservationStatus.EXPIRED);
+            return save(r);
+        }
+        return null;
+    }
+
 }
