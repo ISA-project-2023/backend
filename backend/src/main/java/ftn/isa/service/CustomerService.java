@@ -5,6 +5,8 @@ import ftn.isa.repository.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class CustomerService {
     @Autowired
@@ -17,6 +19,7 @@ public class CustomerService {
             throw e;
         }
     }
+
 
     public Customer findByToken(String token) {
         return customerRepository.findByToken(token);

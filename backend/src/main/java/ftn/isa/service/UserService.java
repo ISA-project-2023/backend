@@ -1,5 +1,6 @@
 package ftn.isa.service;
 
+import ftn.isa.domain.Customer;
 import ftn.isa.domain.SystemAdmin;
 import ftn.isa.domain.User;
 import ftn.isa.repository.IUserRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -46,5 +48,15 @@ public class UserService {
         }
 
         return null;
+    }
+    public User resetPenaltyPoints(User user){
+        LocalDate currentDate = LocalDate.now();
+        double val = currentDate.getYear() + (double) currentDate.getMonthValue() / 100;
+        if(user.getPenaltyMonth()<val){
+            user.setPenaltyPoints(0);
+            user.setPenaltyMonth(val);
+            return save(user);
+        }
+        return user;
     }
 }

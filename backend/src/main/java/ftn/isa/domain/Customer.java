@@ -21,8 +21,8 @@ public class Customer extends User {
         super();
     }
     public Customer(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category,
-                    String city, String country, String phoneNumber, String companyInfo) {
-        super(id, username, password, email, penaltyPoints, role, firstName, lastName, category);
+                    String city, String country, String phoneNumber, String companyInfo, double penaltyMonth) {
+        super(id, username, password, email, penaltyPoints, role, firstName, lastName, category, penaltyMonth);
         this.city = city;
         this.country = country;
         this.phoneNumber = phoneNumber;

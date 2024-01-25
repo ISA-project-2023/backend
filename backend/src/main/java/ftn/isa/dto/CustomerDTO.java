@@ -13,7 +13,7 @@ public class CustomerDTO extends UserDTO {
 
     public CustomerDTO(Customer customer) {
         super(customer.getId(), customer.getUsername(), customer.getEmail(), customer.getPenaltyPoints(), customer.getRole(),
-                customer.getFirstName(), customer.getLastName(), customer.getCategory());
+                customer.getFirstName(), customer.getLastName(), customer.getCategory(), customer.getPenaltyMonth());
         this.city = customer.getCity();
         this.country = customer.getCountry();
         this.phoneNumber = customer.getPhoneNumber();

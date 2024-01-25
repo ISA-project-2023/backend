@@ -58,6 +58,7 @@ public class UserController {
         }
 
         if (authenticatedUser != null && authenticatedUser.isEnabled()) {
+            authenticatedUser = userService.resetPenaltyPoints(authenticatedUser);
             session = request.getSession();
             session.setAttribute("user", authenticatedUser);
             if (loggedinCustomer != null){
