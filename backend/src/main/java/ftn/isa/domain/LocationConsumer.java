@@ -3,6 +3,10 @@ package ftn.isa.domain;
 import ftn.isa.controller.LocationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +21,9 @@ public class LocationConsumer {
      * prosledjivati poruke metodi. Listener ce konvertovati poruku u odgovorajuci tip koristeci
      * odgovarajuci konvertor poruka (implementacija org.springframework.amqp.support.converter.MessageConverter interfejsa).
      */
-    @RabbitListener(queues="${myqueue}")
+	@RabbitListener(
+		bindings = @QueueBinding(value = @Queue(value = "${myqueue2}", durable = "true"),
+                exchange = @Exchange(value = "${exchange}")))
     public void handler(String message){
         log.info("Consumer> " + message);
         LocationController.sendMessageToExternalApp(message);

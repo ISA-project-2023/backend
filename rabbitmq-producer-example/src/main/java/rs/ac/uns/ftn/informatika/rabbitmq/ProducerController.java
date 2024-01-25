@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.rabbitmq;
 
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "api")
@@ -22,9 +25,8 @@ public class ProducerController {
 	}
 	
 	@PostMapping(value="/{exchange}/{queue}", consumes = "text/plain")
-	public ResponseEntity<String> sendMessageToExchange(@PathVariable("exchange") String exchange, @PathVariable("queue") String queue, @RequestBody String message) {
+	public ResponseEntity<String> sendMessageToExchange(@PathVariable("exchange") String exchange, @PathVariable("queue") String queue, @RequestBody String message) throws JSONException, IOException, InterruptedException {
 		producer.sendToExchange(exchange, queue, message);
 		return ResponseEntity.ok().build();
 	}
-
 }
