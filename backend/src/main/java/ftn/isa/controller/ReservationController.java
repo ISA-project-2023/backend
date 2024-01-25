@@ -125,6 +125,16 @@ public class ReservationController {
         }
         return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/allPreviousByCustomer/{id}")
+    public ResponseEntity<List<ReservationDTO>> getAllPreviousByCustomer(@PathVariable Integer id) {
+        List<Reservation> reservations = service.getAllPreviousByCustomer(id);
+        List<ReservationDTO> reservationDTOS = new ArrayList<>();
+        for (Reservation s : reservations) {
+            reservationDTOS.add(new ReservationDTO(s));
+        }
+        return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
+    }
     @GetMapping(value = "/allByCompany/{id}")
     public ResponseEntity<List<ReservationDTO>> getAllByCompany(@PathVariable Integer id) {
         List<Reservation> reservations = service.getAllByCompany(id);

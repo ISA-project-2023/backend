@@ -6,6 +6,8 @@ import ftn.isa.repository.IReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,18 @@ public class ReservationService {
         List<Reservation> result = new ArrayList<>();
         reservations = getAll();
         for (Reservation r : reservations) {
-            if(r.getCustomer().getId().equals(id)){
+            if(r.getCustomer().getId().equals(id) && r.getPickUpAppointment().getDate().toLocalDate().isAfter(LocalDate.now())){
+                result.add(r);
+            }
+        }
+        return result;
+    }
+    public List<Reservation> getAllPreviousByCustomer(Integer id){
+        List<Reservation> reservations = new ArrayList<>();
+        List<Reservation> result = new ArrayList<>();
+        reservations = getAll();
+        for (Reservation r : reservations) {
+            if(r.getCustomer().getId().equals(id) && r.getPickUpAppointment().getDate().toLocalDate().isBefore(LocalDate.now())){
                 result.add(r);
             }
         }
