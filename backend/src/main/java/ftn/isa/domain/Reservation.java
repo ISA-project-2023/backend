@@ -83,4 +83,20 @@ public class Reservation {
     public void setStatus(ReservationStatus status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+//        StringBuilder eq = new StringBuilder();
+//        if (equipment != null) {
+//            for (Equipment e : equipment) {
+//                eq.append(e.getName()).append(" (").append(e.getDescription()).append("), ");
+//            }
+//        }
+        return "Reservation Details: \n" +
+                "Company: " + (company != null ? company.getName() : "") +
+                "\nCustomer: " + (customer != null ? customer.getFirstName() + " " + customer.getLastName() : "") +
+//                "\nEquipment: " + eq.toString() +
+                "\nPickup date: " + (pickUpAppointment != null ? pickUpAppointment.getDate() : "");
+    }
+
 }

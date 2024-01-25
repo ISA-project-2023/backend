@@ -126,6 +126,23 @@ public class ReservationController {
         return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/allQRCodesByCustomer/{id}")
+    public ResponseEntity<List<byte[]>> getAllQRCodesByCustomer(@PathVariable Integer id) {
+        List<Reservation> reservations = service.getAllByCustomer(id);
+        List<byte[]> qrCodes = new ArrayList<>();
+        int i = 0;
+        for(Reservation s: reservations) {
+            try {
+                qrCodes.add(emailService.generateQRCodeImage(s.toString(), 300, 300));
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }
+        }
+        System.out.println(qrCodes.size());
+        return new ResponseEntity<>(qrCodes, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/allPreviousByCustomer/{id}")
     public ResponseEntity<List<ReservationDTO>> getAllPreviousByCustomer(@PathVariable Integer id) {
         List<Reservation> reservations = service.getAllPreviousByCustomer(id);
