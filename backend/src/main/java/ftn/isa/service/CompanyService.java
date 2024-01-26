@@ -15,6 +15,9 @@ public class CompanyService {
     @Autowired
     private ICompanyRepository companyRepository;
 
+    public Company findOneByName(String name){
+        return companyRepository.findFirstByName(name);
+    }
     public List<Company> findAll(){ return companyRepository.findAll();}
     public Page<Company> findAll(Pageable page){ return companyRepository.findAll(page);}
     //public List<Equipment> findEquipment() { return companyRepository.findEquipment(); }

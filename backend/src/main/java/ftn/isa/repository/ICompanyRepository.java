@@ -11,6 +11,7 @@ import java.util.List;
 public interface ICompanyRepository extends JpaRepository<Company, Integer> {
     public Page<Company> findAll(Pageable pageable);
     public List<Company> findAll();
+    public Company findFirstByName(String name);
     //public List<Equipment> findEquipment();
     //public List<Company> findAllByName(String name);
 }
