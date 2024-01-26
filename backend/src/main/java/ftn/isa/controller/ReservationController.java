@@ -264,8 +264,21 @@ public class ReservationController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         List<ReservationDTO> reservationsDTO = new ArrayList<>();
         for (Reservation r : reservations) {
+            if (r.getStatus() == ReservationStatus.PENDING && isAppointmentExpired(r.getPickUpAppointment())) {
+                Reservation expiredReservation = service.expired(r.getId());
+                User user = userService.findOne(expiredReservation.getCustomer().getId());
+                int penaltyPoints = user.getPenaltyPoints();
+                penaltyPoints += 2;
+                user.setPenaltyPoints(penaltyPoints);
+                userService.save(user);
+            }
             reservationsDTO.add(new ReservationDTO(r));
         }
         return new ResponseEntity<>(reservationsDTO, HttpStatus.OK);
+    }
+
+    private boolean isAppointmentExpired(PickUpAppointment appointment) {
+        LocalDateTime endTime = appointment.getDate().plusHours(appointment.getDuration());
+        return endTime.isBefore(LocalDateTime.now());
     }
 }

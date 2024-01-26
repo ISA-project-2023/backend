@@ -104,7 +104,7 @@ public class UserController {
     public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
         if(session!=null){
             User current = (User) session.getAttribute("user");
-            User user = customerService.find(current.getId());
+            User user = userService.findOne(current.getId());
             session.setAttribute("user", user);
             if(user != null){
                 return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
