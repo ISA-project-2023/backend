@@ -1,5 +1,7 @@
 package ftn.isa.domain;
 
+import ftn.isa.dto.EquipmentAmountDTO;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class Reservation {
 
     @Convert(converter = EquipmentListConverter.class)
     @Column(name = "equipment", columnDefinition = "TEXT")
-    private List<Equipment> equipment;
+    private List<EquipmentAmountDTO> equipment;
 
     public Reservation(Integer id, PickUpAppointment pickUpAppointment, Customer customer, ReservationStatus status, Company company) {
         this.id = id;
@@ -49,11 +51,11 @@ public class Reservation {
     public void setCompany(Company company) {
         this.company = company;
     }
-    public List<Equipment> getEquipment() {
+    public List<EquipmentAmountDTO> getEquipment() {
         return equipment;
     }
 
-    public void setEquipment(List<Equipment> equipment) {
+    public void setEquipment(List<EquipmentAmountDTO> equipment) {
         this.equipment = equipment;
     }
 

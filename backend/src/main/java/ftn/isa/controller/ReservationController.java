@@ -2,6 +2,7 @@ package ftn.isa.controller;
 
 import ftn.isa.domain.*;
 import ftn.isa.dto.CompanyAdminDTO;
+import ftn.isa.dto.EquipmentAmountDTO;
 import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.dto.ReservationDTO;
 import ftn.isa.service.*;
@@ -187,8 +188,8 @@ public class ReservationController {
                 + "<li><strong>Company:</strong> " + reservationDto.getCompany().getName() + "</li>"
                 + "<li><strong>Equipment:</strong> <br/>");
 
-        for (Equipment e : reservationDto.getEquipment()) {
-            mail.append(e.getName()).append(" (").append(e.getDescription()).append(")").append("<br/>");
+        for (EquipmentAmountDTO e : reservationDto.getEquipment()) {
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(" × ").append(e.getQuantity()).append(")").append("<br/>");
         }
 
         mail.append("</li>")
@@ -214,8 +215,8 @@ public class ReservationController {
                 + "<li><strong>Company:</strong> " + reservation.getCompany().getName() + "</li>"
                 + "<li><strong>Equipment:</strong> <br/>");
 
-        for (Equipment e : reservation.getEquipment()) {
-            mail.append(e.getName()).append(" (").append(e.getDescription()).append(")").append("<br/>");
+        for (EquipmentAmountDTO e : reservation.getEquipment()) {
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(" × ").append(e.getQuantity()).append(")").append("<br/>");
         }
 
         mail.append("</li>")
@@ -246,10 +247,10 @@ public class ReservationController {
                 + "Pick-up-Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
     }
 
-    private String getEquipmentDetails(List<Equipment> equipmentList) {
+    private String getEquipmentDetails(List<EquipmentAmountDTO> equipmentList) {
         StringBuilder equipmentDetails = new StringBuilder();
-        for (Equipment e : equipmentList) {
-            equipmentDetails.append(e.getName()).append(" (").append(e.getDescription()).append("), ");
+        for (EquipmentAmountDTO e : equipmentList) {
+            equipmentDetails.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(" × ").append(e.getQuantity()).append(")").append("), ");
         }
         if (equipmentDetails.length() > 0) {
             equipmentDetails.setLength(equipmentDetails.length() - 2);
