@@ -40,8 +40,8 @@ public class ContractService {
     public List<Contract> findAll(){
             return contractRepository.findAll();
     }
-    public Contract findValidByCompany(Company company){
-        return contractRepository.findByCompanyAndValid(company, true);
+    public List<Contract> findValidByCompany(Company company){
+        return contractRepository.findAllByCompanyAndValid(company, true);
     }
     public Contract cancel(Integer id){
         Contract con = contractRepository.findContractById(id);

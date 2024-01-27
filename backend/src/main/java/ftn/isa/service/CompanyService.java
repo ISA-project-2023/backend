@@ -16,7 +16,7 @@ public class CompanyService {
     private ICompanyRepository companyRepository;
 
     public Company findOneByName(String name){
-        return companyRepository.findFirstByName(name);
+        return companyRepository.findByName(name);
     }
     public List<Company> findAll(){ return companyRepository.findAll();}
     public Page<Company> findAll(Pageable page){ return companyRepository.findAll(page);}
