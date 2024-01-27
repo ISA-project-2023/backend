@@ -3,6 +3,7 @@ package ftn.isa.domain;
 import ftn.isa.dto.EquipmentAmountDTO;
 
 import javax.persistence.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Entity
@@ -84,5 +85,31 @@ public class Reservation {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder eq = new StringBuilder();
+
+        if (equipment != null) {
+            for (Object equipmentItem : equipment) {
+                if (equipmentItem instanceof LinkedHashMap) {
+                    LinkedHashMap<?, ?> equipmentMap = (LinkedHashMap<?, ?>) equipmentItem;
+                    Object name = equipmentMap.get("name");
+                    Object description = equipmentMap.get("description");
+
+                    if (name != null && description != null) {
+                        eq.append(name).append(" (").append(description).append("), ");
+                    }
+                }
+            }
+        }
+
+        return "Reservation Details: \n" +
+                "Company: " + (company != null ? company.getName() : "") +
+                "\nCustomer: " + (customer != null ? customer.getFirstName() + " " + customer.getLastName() : "") +
+                "\nCompany Admin: " + (pickUpAppointment.getCompanyAdmin() != null ? pickUpAppointment.getCompanyAdmin().getFirstName() + " " + pickUpAppointment.getCompanyAdmin().getLastName() : "") +
+                "\nEquipment: " + eq +
+                "\nPickup date: " + (pickUpAppointment != null ? pickUpAppointment.getDate() : "");
     }
 }

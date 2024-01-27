@@ -16,7 +16,11 @@ public class CompanyService {
     @Autowired
     private ICompanyRepository companyRepository;
 
-    public List<Company> findAll() { return companyRepository.findAll(); }
+
+    public Company findOneByName(String name){
+        return companyRepository.findByName(name);
+    }
+    public List<Company> findAll(){ return companyRepository.findAll();}
     public Page<Company> findAll(Pageable page){ return companyRepository.findAll(page);}
     //public List<Equipment> findEquipment() { return companyRepository.findEquipment(); }
     //public List<Company> findByName(String name) { return companyRepository.findAllByName(name); }
