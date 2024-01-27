@@ -12,5 +12,6 @@ public interface IContractRepository extends JpaRepository<Contract, Integer> {
     public Page<Contract> findAll(Pageable pageable);
     public List<Contract> findAll();
     public List<Contract> findAllByCompany(Company company);
+    public Contract findContractById(Integer id);
     public Contract findByCompanyAndValid(Company company, boolean valid);
 }

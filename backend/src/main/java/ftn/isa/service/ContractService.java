@@ -6,6 +6,7 @@ import ftn.isa.repository.IContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,5 +42,25 @@ public class ContractService {
     }
     public Contract findValidByCompany(Company company){
         return contractRepository.findByCompanyAndValid(company, true);
+    }
+    public Contract cancel(Integer id){
+        Contract con = contractRepository.findContractById(id);
+        if(!con.isValid()
+                || con.getDate().isBefore(LocalDateTime.now().plusDays(3))
+                || con.getDate().isAfter(LocalDateTime.now().plusMonths(1))){
+            return null;
+        }
+        con.setDate(con.getDate().plusMonths(1));
+        return contractRepository.save(con);
+    }
+    public Contract deliver(Integer id){
+        Contract con = contractRepository.findContractById(id);
+        if(!con.isValid() ||
+                (con.getDate().getYear()!=LocalDateTime.now().getYear() || con.getDate().getDayOfYear()!=LocalDateTime.now().getDayOfYear())
+        ){
+            return null;
+        }
+        con.setDate(con.getDate().plusMonths(1));
+        return contractRepository.save(con);
     }
 }
