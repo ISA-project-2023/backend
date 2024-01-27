@@ -2,8 +2,9 @@ package ftn.isa.controller;
 
 import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyEquipment;
+import ftn.isa.domain.CompanyEquipmentId;
 import ftn.isa.domain.Equipment;
-import ftn.isa.dto.CompanyDTO;
+import ftn.isa.dto.*;
 import ftn.isa.service.CompanyEquipmentService;
 import ftn.isa.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,24 @@ public class CompanyController {
     private CompanyEquipmentService companyEquipmentService;
 
 
+    private CompanyDTO setCompanyDTO(Company company){
+        CompanyDTO companyDTO = new CompanyDTO(company);
+        List<EquipmentAmountDTO> list = new ArrayList<>();
+        List<CompanyEquipment> equipmentInCompany = companyEquipmentService.findAllByCompany(company);
+        for (CompanyEquipment companyEquip : equipmentInCompany) {
+            EquipmentAmountDTO equipmentAmountDTO = new EquipmentAmountDTO(new EquipmentDTO(companyEquip.getEquipment()), companyEquip.getQuantity());
+            list.add(equipmentAmountDTO);
+        }
+        companyDTO.setEquipmentAmountInStock(list);
+        return companyDTO;
+    }
     @GetMapping(value = "/all")
     public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
         List<Company> companies = companyService.findAll();
         List<CompanyDTO> companiesDTO = new ArrayList<>();
         for (Company s : companies) {
-            companiesDTO.add(new CompanyDTO(s));
+            CompanyDTO companyDTO = setCompanyDTO(s);
+            companiesDTO.add(companyDTO);
         }
         return new ResponseEntity<>(companiesDTO, HttpStatus.OK);
     }
@@ -53,7 +66,8 @@ public class CompanyController {
         if (c == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new CompanyDTO(c), HttpStatus.OK);
+        CompanyDTO companyDTO = setCompanyDTO(c);
+        return new ResponseEntity<>(companyDTO, HttpStatus.OK);
     }
     @PostMapping(consumes = "application/json")
     public ResponseEntity<CompanyDTO> saveCompany(@RequestBody CompanyDTO companyDTO) {
@@ -113,7 +127,8 @@ public class CompanyController {
         Company finalCompany = company;
         updatedEquipmentSet.forEach(updatedEquipment -> {
             if (!containsEquipment(existingCompanyEquipmentList, updatedEquipment)) {
-                CompanyEquipment newCompanyEquipment = new CompanyEquipment(finalCompany, updatedEquipment);
+                // TODO - quantity
+                CompanyEquipment newCompanyEquipment = new CompanyEquipment(finalCompany, updatedEquipment, 5);
                 companyEquipmentService.save(newCompanyEquipment);
             }
         });
