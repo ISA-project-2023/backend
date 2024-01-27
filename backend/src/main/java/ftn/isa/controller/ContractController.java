@@ -35,7 +35,7 @@ public class ContractController {
         }
         return new ResponseEntity<>(contractsDTO, HttpStatus.OK);
     }
-    @GetMapping(value = "/valid")
+    @GetMapping(value = "/{companyName}")
     public ResponseEntity<List<ContractDTO>> getValidContractByCompany(@PathVariable String companyName) {
         Company company = companyService.findOneByName(companyName);
         List<Contract> contracts = contractService.findValidByCompany(company);

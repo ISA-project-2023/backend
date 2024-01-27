@@ -26,6 +26,7 @@ public class ContractDTO {
         this.valid = valid;
         this.amount = amount;
     }
+    public ContractDTO(){}
     public ContractDTO(Contract contract){
         this(contract.getId(), contract.getHospital(), contract.getHospitalAddress(), contract.getEquipment().getName(), contract.getCompany().getName(), contract.getDate(), contract.isValid(), contract.getAmount());
     }
