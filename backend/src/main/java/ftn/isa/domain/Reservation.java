@@ -89,27 +89,55 @@ public class Reservation {
 
     @Override
     public String toString() {
-        StringBuilder eq = new StringBuilder();
+        StringBuilder reservationDetails = new StringBuilder();
+
+        reservationDetails.append("Reservation Details: \n")
+                .append("Company: ").append(company != null ? company.getName() : "").append("\n")
+                .append("Customer: ").append(customer != null ? customer.getFirstName() + " " + customer.getLastName() : "").append("\n")
+                .append("Company Admin: ").append(pickUpAppointment.getCompanyAdmin() != null ? pickUpAppointment.getCompanyAdmin().getFirstName() + " " + pickUpAppointment.getCompanyAdmin().getLastName() : "").append("\n")
+                .append("Equipment: ");
 
         if (equipment != null) {
             for (Object equipmentItem : equipment) {
-                if (equipmentItem instanceof LinkedHashMap) {
-                    LinkedHashMap<?, ?> equipmentMap = (LinkedHashMap<?, ?>) equipmentItem;
-                    Object name = equipmentMap.get("name");
-                    Object description = equipmentMap.get("description");
+                if (equipmentItem instanceof EquipmentAmountDTO) {
+                    EquipmentAmountDTO equipmentDto = (EquipmentAmountDTO) equipmentItem;
+                    Equipment equipment = equipmentDto.getEquipment();
+                    Integer quantity = equipmentDto.getQuantity();
 
-                    if (name != null && description != null) {
-                        eq.append(name).append(" (").append(description).append("), ");
+                    if (equipment != null) {
+                        reservationDetails.append(equipment.getName()).append(" (")
+                                .append(equipment.getDescription()).append("), Quantity: ")
+                                .append(quantity).append("\n");
                     }
+                } else if (equipmentItem instanceof LinkedHashMap) {
+                    // Handle the different structure (LinkedHashMap) accordingly
+                    LinkedHashMap<?, ?> equipmentMap = (LinkedHashMap<?, ?>) equipmentItem;
+                    LinkedHashMap<?, ?> innerEquipmentMap = (LinkedHashMap<?, ?>) equipmentMap.get("equipment");
+
+                    Object name = innerEquipmentMap.get("name");
+                    Object description = innerEquipmentMap.get("description");
+                    Object quantity = equipmentMap.get("quantity");  // Assuming "quantity" is present in the outer map
+
+                    if (name != null && description != null && quantity != null) {
+                        reservationDetails.append(name).append(" (")
+                                .append(description).append("), Quantity: ")
+                                .append(quantity).append("\n");
+                    }
+                } else {
+                    // If neither EquipmentAmountDTO nor LinkedHashMap nor expected structure, handle it accordingly
+                    reservationDetails.append("Unexpected structure for equipment item\n");
                 }
             }
+        } else {
+            reservationDetails.append("No equipment specified\n");
         }
 
-        return "Reservation Details: \n" +
-                "Company: " + (company != null ? company.getName() : "") +
-                "\nCustomer: " + (customer != null ? customer.getFirstName() + " " + customer.getLastName() : "") +
-                "\nCompany Admin: " + (pickUpAppointment.getCompanyAdmin() != null ? pickUpAppointment.getCompanyAdmin().getFirstName() + " " + pickUpAppointment.getCompanyAdmin().getLastName() : "") +
-                "\nEquipment: " + eq +
-                "\nPickup date: " + (pickUpAppointment != null ? pickUpAppointment.getDate() : "");
+        reservationDetails.append("Pickup date: ").append(pickUpAppointment != null ? pickUpAppointment.getDate() : "");
+
+        return reservationDetails.toString();
     }
+
+
+
+
 }

@@ -206,7 +206,7 @@ public class ReservationController {
                 + "<li><strong>Equipment:</strong> <br/>");
 
         for (EquipmentAmountDTO e : reservationDto.getEquipment()) {
-            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(" × ").append(e.getQuantity()).append(")").append("<br/>");
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append("<br/>");
         }
 
         mail.append("</li>")
@@ -233,7 +233,7 @@ public class ReservationController {
                 + "<li><strong>Equipment:</strong> <br/>");
 
         for (EquipmentAmountDTO e : reservation.getEquipment()) {
-            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(" × ").append(e.getQuantity()).append(")").append("<br/>");
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append("<br/>");
         }
 
         mail.append("</li>")
@@ -267,7 +267,7 @@ public class ReservationController {
     private String getEquipmentDetails(List<EquipmentAmountDTO> equipmentList) {
         StringBuilder equipmentDetails = new StringBuilder();
         for (EquipmentAmountDTO e : equipmentList) {
-            equipmentDetails.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(" × ").append(e.getQuantity()).append(")").append("), ");
+            equipmentDetails.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append(", ");
         }
         if (equipmentDetails.length() > 0) {
             equipmentDetails.setLength(equipmentDetails.length() - 2);
