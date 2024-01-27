@@ -71,8 +71,8 @@ public class Producer {
 	 * exchange ce rutirati poruke u pravi queue.
 	 */
 	public void sendToExchange(String exchange, String routingkey, String message) throws InterruptedException, IOException, JSONException {
-		String startPoint = "19.8451756,45.2551338";
-		String endPoint = "19.756395,45.2495309";
+		String startPoint = "20.412597,44.807173";
+		String endPoint = "19.846801,45.286481";
 
 		String route = Producer.getRoute(startPoint, endPoint);
 		List<double[]> coordinates = parseCoordinatesFromRoute(route, exchange, routingkey);
