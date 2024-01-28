@@ -1,6 +1,8 @@
 package ftn.isa.service;
 
 import ftn.isa.domain.*;
+import ftn.isa.dto.EquipmentAmountDTO;
+import ftn.isa.repository.ICompanyEquipmentRepository;
 import ftn.isa.repository.IPickUpAppointmentRepository;
 import ftn.isa.repository.IReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,27 @@ import java.util.List;
 public class ReservationService {
     @Autowired
     private IReservationRepository reservationRepository;
-
+    @Autowired
+    private ICompanyEquipmentRepository companyEquipmentRepository;
     public Reservation save(Reservation reservation){
+        if(reservation.getId()==null){
+            List<CompanyEquipment> c = companyEquipmentRepository.findAllByCompany(reservation.getCompany());
+            List<CompanyEquipment> c1 = new ArrayList<>();
+            for(CompanyEquipment ce: c){
+                for(EquipmentAmountDTO eq: reservation.getEquipment()){
+                    if(eq.getEquipment().getId()==ce.getEquipment().getId()){
+                        ce.setQuantity(ce.getQuantity()-eq.getQuantity());
+                        if(ce.getQuantity()<0){
+                            return null;
+                        }
+                        c1.add(ce);
+                    }
+                }
+            }
+            for(CompanyEquipment ce:c1){
+                companyEquipmentRepository.save(ce);
+            }
+        }
         return reservationRepository.save(reservation);
     }
     public Reservation getOne(int id){ return reservationRepository.findById(id).orElseGet(null); }
@@ -63,6 +84,22 @@ public class ReservationService {
     public Reservation cancel(Integer id) {
         Reservation r = getOne(id);
         if (r != null) {
+            List<CompanyEquipment> c = companyEquipmentRepository.findAllByCompany(r.getCompany());
+            List<CompanyEquipment> c1 = new ArrayList<>();
+            for(CompanyEquipment ce: c){
+                for(EquipmentAmountDTO eq: r.getEquipment()){
+                    if(eq.getEquipment().getId()==ce.getEquipment().getId()){
+                        ce.setQuantity(ce.getQuantity()+eq.getQuantity());
+                        if(ce.getQuantity()<0){
+                            return null;
+                        }
+                        c1.add(ce);
+                    }
+                }
+            }
+            for(CompanyEquipment ce:c1){
+                companyEquipmentRepository.save(ce);
+            }
             r.setStatus(ReservationStatus.CANCELED);
             return save(r);
         }

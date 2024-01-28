@@ -2,6 +2,7 @@ package ftn.isa.controller;
 
 import ftn.isa.domain.*;
 import ftn.isa.dto.CompanyAdminDTO;
+import ftn.isa.dto.EquipmentAmountDTO;
 import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.dto.ReservationDTO;
 import ftn.isa.service.*;
@@ -204,8 +205,8 @@ public class ReservationController {
                 + "<li><strong>Company:</strong> " + reservationDto.getCompany().getName() + "</li>"
                 + "<li><strong>Equipment:</strong> <br/>");
 
-        for (Equipment e : reservationDto.getEquipment()) {
-            mail.append(e.getName()).append(" (").append(e.getDescription()).append(")").append("<br/>");
+        for (EquipmentAmountDTO e : reservationDto.getEquipment()) {
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append("<br/>");
         }
 
         mail.append("</li>")
@@ -231,8 +232,8 @@ public class ReservationController {
                 + "<li><strong>Company:</strong> " + reservation.getCompany().getName() + "</li>"
                 + "<li><strong>Equipment:</strong> <br/>");
 
-        for (Equipment e : reservation.getEquipment()) {
-            mail.append(e.getName()).append(" (").append(e.getDescription()).append(")").append("<br/>");
+        for (EquipmentAmountDTO e : reservation.getEquipment()) {
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append("<br/>");
         }
 
         mail.append("</li>")
@@ -263,10 +264,10 @@ public class ReservationController {
                 + "Pick-up-Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
     }
 
-    private String getEquipmentDetails(List<Equipment> equipmentList) {
+    private String getEquipmentDetails(List<EquipmentAmountDTO> equipmentList) {
         StringBuilder equipmentDetails = new StringBuilder();
-        for (Equipment e : equipmentList) {
-            equipmentDetails.append(e.getName()).append(" (").append(e.getDescription()).append("), ");
+        for (EquipmentAmountDTO e : equipmentList) {
+            equipmentDetails.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append(", ");
         }
         if (equipmentDetails.length() > 0) {
             equipmentDetails.setLength(equipmentDetails.length() - 2);
@@ -281,8 +282,21 @@ public class ReservationController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         List<ReservationDTO> reservationsDTO = new ArrayList<>();
         for (Reservation r : reservations) {
+            if (r.getStatus() == ReservationStatus.PENDING && isAppointmentExpired(r.getPickUpAppointment())) {
+                Reservation expiredReservation = service.expired(r.getId());
+                User user = userService.findOne(expiredReservation.getCustomer().getId());
+                int penaltyPoints = user.getPenaltyPoints();
+                penaltyPoints += 2;
+                user.setPenaltyPoints(penaltyPoints);
+                userService.save(user);
+            }
             reservationsDTO.add(new ReservationDTO(r));
         }
         return new ResponseEntity<>(reservationsDTO, HttpStatus.OK);
+    }
+
+    private boolean isAppointmentExpired(PickUpAppointment appointment) {
+        LocalDateTime endTime = appointment.getDate().plusHours(appointment.getDuration());
+        return endTime.isBefore(LocalDateTime.now());
     }
 }
