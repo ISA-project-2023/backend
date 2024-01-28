@@ -8,6 +8,7 @@ import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +16,8 @@ public class LocationConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(LocationConsumer.class);
 
+    @Autowired
+    LocationController controller;
     /*
      * @RabbitListener anotira metode za kreiranje handlera za bilo koju poruku koja pristize,
      * sto znaci da ce se kreirati listener koji je konektovan na RabbitQM queue i koji ce
@@ -26,7 +29,7 @@ public class LocationConsumer {
                 exchange = @Exchange(value = "${exchange}")))
     public void handler(String message){
         log.info("Consumer> " + message);
-        LocationController.sendMessageToExternalApp(message);
+        controller.sendMessageToExternalApp(message);
     }
 }
 
