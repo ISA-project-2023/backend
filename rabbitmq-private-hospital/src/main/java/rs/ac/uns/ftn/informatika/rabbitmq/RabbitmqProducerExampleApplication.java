@@ -7,6 +7,8 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +21,7 @@ import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.context.annotation.ComponentScan;
 
 /*
  * 
@@ -26,26 +29,9 @@ import org.json.JSONObject;
  */
 @SpringBootApplication
 public class RabbitmqProducerExampleApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(RabbitmqProducerExampleApplication.class, args);
-		Producer producer = new Producer();
-		String routingKey = "spring-boot3";
-		while(true){
-			System.out.println("Create a new contract:");
-			System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
-			Scanner scanner = new Scanner(System.in);
-			String contract = scanner.nextLine();
-			StringBuilder builder = new StringBuilder();
-			builder.append("Hospital1,Address1,").append(contract);
-			contract = builder.toString();
-			producer.sendTo(routingKey, contract);
-		}
-	}
-
-	@Value("${myqueue}")
+	@Value("spring-boot3")
 	String queue;
-	@Value("${myexchange}")
+	@Value("myexchange2")
 	String exchange;
 	@Bean
 	Queue queue() {
@@ -55,6 +41,14 @@ public class RabbitmqProducerExampleApplication {
 	DirectExchange exchange() {
 		return new DirectExchange(exchange);
 	}
+	@Autowired
+	private Producer producer;
+	public static void main(String[] args) {
+		SpringApplication.run(RabbitmqProducerExampleApplication.class, args);
+	}
+
+
+
 	@Bean
 	Binding binding(Queue queue2, DirectExchange exchange) {
 		return BindingBuilder.bind(queue2).to(exchange).with(queue);
@@ -67,6 +61,21 @@ public class RabbitmqProducerExampleApplication {
 	public ConnectionFactory connectionFactory() {
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
 		return connectionFactory;
+	}
+
+	@Bean
+	public void run() {
+		String routingKey = "spring-boot3";
+		while (true) {
+			System.out.println("Create a new contract:");
+			System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
+			Scanner scanner = new Scanner(System.in);
+			String contract = scanner.nextLine();
+			StringBuilder builder = new StringBuilder();
+			builder.append("Hospital1,Address1,").append(contract);
+			contract = builder.toString();
+			producer.sendTo(routingKey, contract);
+		}
 	}
 
 }

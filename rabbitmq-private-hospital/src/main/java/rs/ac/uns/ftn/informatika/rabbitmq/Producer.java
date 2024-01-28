@@ -52,49 +52,5 @@ public class Producer {
 	 * Poruka se salje u exchange ciji je naziv prosledjen kao prvi parametar i
 	 * exchange ce rutirati poruke u pravi queue.
 	 */
-//	public void sendToExchange(String exchange, String routingkey, String message) throws InterruptedException, IOException, JSONException {
-//		String startPoint = "20.412597,44.807173";
-//		String endPoint = "19.846801,45.286481";
-//
-//		String route = Producer.getRoute(startPoint, endPoint);
-//		List<double[]> coordinates = parseCoordinatesFromRoute(route, exchange, routingkey);
-//
-//		for(int i = 0; i < coordinates.size(); ++i) {
-//			double[] coordinate = coordinates.get(i);
-//			double latitude = coordinate[0];
-//			double longitude = coordinate[1];
-//
-//			String location = latitude + "," + longitude;
-//			log.info("Sending> ... Message=[ " + location + " ] Exchange=[" + exchange + "] RoutingKey=[" + routingkey + "]");
-//			this.rabbitTemplate.convertAndSend(exchange, routingkey, location);
-//
-//			Thread.sleep(4000);
-//		}
-//		this.rabbitTemplate.convertAndSend(exchange, routingkey, message);
-//	}
-//
-//	private List<double[]> parseCoordinatesFromRoute(String route, String exchange, String routingkey) throws JSONException {
-//		JSONObject routeJson = new JSONObject(route);
-//		JSONArray coordinates = routeJson.getJSONArray("features").getJSONObject(0)
-//				.getJSONObject("geometry").getJSONArray("coordinates");
-//
-//		JSONArray features = routeJson.getJSONArray("features");
-//		JSONObject summary = features.getJSONObject(0).getJSONObject("properties").getJSONObject("summary");
-//		double duration = summary.getDouble("duration");
-//
-//		System.out.println("Trajanje: " + duration);
-//		this.rabbitTemplate.convertAndSend(exchange, routingkey, duration);
-//		System.out.println(coordinates);
-//
-//		List<double[]> result = new ArrayList<>();
-//		for (int i = 0; i < coordinates.length(); i++) {
-//			JSONArray coordinate = coordinates.getJSONArray(i);
-//			double longitude = coordinate.getDouble(0);
-//			double latitude = coordinate.getDouble(1);
-//
-//			result.add(new double[]{latitude, longitude});
-//		}
-//
-//		return result;
-//	}
+
 }
