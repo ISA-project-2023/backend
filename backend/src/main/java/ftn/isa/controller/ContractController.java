@@ -2,6 +2,7 @@ package ftn.isa.controller;
 
 import ftn.isa.domain.Company;
 import ftn.isa.domain.Contract;
+import ftn.isa.domain.ContractProducer;
 import ftn.isa.domain.Equipment;
 import ftn.isa.dto.ContractDTO;
 import ftn.isa.service.CompanyService;
@@ -29,7 +30,7 @@ public class ContractController {
     @Autowired
     private CompanyService companyService;
     @Autowired
-    private EquipmentService equipmentService;
+    private ContractProducer producer;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ContractDTO>> getAllContracts() {
@@ -54,6 +55,10 @@ public class ContractController {
     @PutMapping(consumes = "application/json", path = "/cancel")
     public ResponseEntity<ContractDTO> cancelContract(@RequestBody ContractDTO contractDTO){
         Contract contract = contractService.cancel(contractDTO.getId());
+        if(contract!=null){
+            String message = contract.getCompany().getName() + " canceled delivery for this month.";
+            producer.sendTo("spring-boot4", message);
+        }
         //If successful, send message to hospital about cancellation.
         return new ResponseEntity<>(new ContractDTO(contract), HttpStatus.OK);
     }
