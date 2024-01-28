@@ -12,8 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -75,4 +80,18 @@ public class ContractController {
         //If successful, send message to hospital about delivery.
         return new ResponseEntity<>(new ContractDTO(contract), HttpStatus.OK);
     }
+//    CompanyService companyService = new CompanyService();
+//    ContractService service = new ContractService();
+//    List<Contract> contracts = new ArrayList<>();
+//        for(var company: companyService.findAll()){
+//        List<Contract> contractsForCompany = service.findValidByCompany(company);
+//        if(contractsForCompany.get(0)!=null)
+//            contracts.add(contractsForCompany.get(0));
+//    }
+//    List<ScheduledExecutorService> schedulers = new ArrayList<>();
+//        for(int i = 0; i<contracts.size(); i++){
+//        schedulers.set(i, Executors.newScheduledThreadPool(1));
+//        int finalI = i;
+//        schedulers.get(i).scheduleAtFixedRate(() -> deliver(contracts.get(finalI).getCompany().getName()), Duration.between(LocalDateTime.now(), contracts.get(finalI).getDate()).toDays(), 30, TimeUnit.SECONDS);
+//    }
 }
