@@ -53,7 +53,9 @@ public class WebSocketController {
      *
      */
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/message")
+    @SendTo("/socket-publisher")
     public Map<String, String> broadcastNotification(String message) {
         Map<String, String> messageConverted = parseMessage(message);
 

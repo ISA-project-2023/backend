@@ -24,14 +24,14 @@ public class LocationController {
     @PostMapping(value="/send-message", consumes="text/plain")
     public void sendRequestToOtherApp(@RequestBody String text) {
         // Send the message via WebSocket I WANT THIS MESSAGE TO BE SENT
-        messagingTemplate.convertAndSend("/topic/location", text);
 
         String url = "http://localhost:8080/api/myexchange/spring-boot2";
         restTemplate.postForObject(url, text, String.class);
     }
 
-    public static void sendMessageToExternalApp(String text) {
+    public void sendMessageToExternalApp(String text) {
         try {
+            messagingTemplate.convertAndSend("/socket-publisher", text);
             String url = "http://localhost:8082/api/location/get-message";
             restTemplate.postForObject(url, text, String.class);
         } catch(Exception e) {
