@@ -51,22 +51,6 @@ public class ContractController {
         return new ResponseEntity<>(contractDTOs, HttpStatus.OK);
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<ContractDTO> addContract(@RequestBody ContractDTO contractDTO){
-        Company company = companyService.findOneByName(contractDTO.getCompany());
-        //Equipment equipment = equipmentService.findOneByName(contractDTO.getEquipment());
-        Equipment equipment = null;
-        for(Equipment e: company.getEquipments()){
-            if(e.getName().equals(contractDTO.getEquipment())){
-                equipment = e;
-                break;
-            }
-        }
-        Contract contract = new Contract(null, company, contractDTO.getHospital(), contractDTO.getHospitalAddress(), contractDTO.getDate(), true, equipment, contractDTO.getAmount());
-        Contract savedContract = contractService.save(contract);
-        return new ResponseEntity<>(new ContractDTO(savedContract), HttpStatus.OK);
-    }
-
     @PutMapping(consumes = "application/json", path = "/cancel")
     public ResponseEntity<ContractDTO> cancelContract(@RequestBody ContractDTO contractDTO){
         Contract contract = contractService.cancel(contractDTO.getId());
