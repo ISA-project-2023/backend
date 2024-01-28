@@ -2,6 +2,7 @@ package ftn.isa.service;
 
 import ftn.isa.domain.*;
 import ftn.isa.dto.EquipmentAmountDTO;
+import ftn.isa.dto.ReservationDTO;
 import ftn.isa.repository.ICompanyEquipmentRepository;
 import ftn.isa.repository.IPickUpAppointmentRepository;
 import ftn.isa.repository.IReservationRepository;
@@ -83,11 +84,12 @@ public class ReservationService {
 
     public Reservation cancel(Integer id) {
         Reservation r = getOne(id);
+        ReservationDTO res = new ReservationDTO(r);
         if (r != null) {
             List<CompanyEquipment> c = companyEquipmentRepository.findAllByCompany(r.getCompany());
             List<CompanyEquipment> c1 = new ArrayList<>();
             for(CompanyEquipment ce: c){
-                for(EquipmentAmountDTO eq: r.getEquipment()){
+                for(EquipmentAmountDTO eq: res.getEquipment()){
                     if(eq.getEquipment().getId()==ce.getEquipment().getId()){
                         ce.setQuantity(ce.getQuantity()+eq.getQuantity());
                         if(ce.getQuantity()<0){

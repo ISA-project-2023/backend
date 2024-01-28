@@ -26,7 +26,8 @@ public class EquipmentListConverter implements AttributeConverter<List<Equipment
     @Override
     public List<EquipmentAmountDTO> convertToEntityAttribute(String json) {
         try {
-            return objectMapper.readValue(json, new ArrayList<EquipmentAmountDTO>().getClass());
+            // Use TypeReference to specify the type of the target list
+            return objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(List.class, EquipmentAmountDTO.class));
         } catch (IOException e) {
             throw new RuntimeException("Error converting JSON to equipment list", e);
         }
