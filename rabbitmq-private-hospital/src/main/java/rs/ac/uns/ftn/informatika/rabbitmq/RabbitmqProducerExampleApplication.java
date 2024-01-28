@@ -29,10 +29,16 @@ public class RabbitmqProducerExampleApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(RabbitmqProducerExampleApplication.class, args);
-		System.out.println("Create a new contract:");
-		System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
-		Scanner scanner = new Scanner(System.in);
-		String equipment = scanner.nextLine();
+		while(true){
+			System.out.println("Create a new contract:");
+			System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
+			Scanner scanner = new Scanner(System.in);
+			String contract = scanner.nextLine();
+			StringBuilder builder = new StringBuilder();
+			builder.append("Hospital1,Address1,").append(contract);
+			contract = builder.toString();
+			System.out.println(contract);
+		}
 	}
 
 	@Value("${myqueue}")
