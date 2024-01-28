@@ -29,6 +29,8 @@ public class RabbitmqProducerExampleApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(RabbitmqProducerExampleApplication.class, args);
+		Producer producer = new Producer();
+		String routingKey = "spring-boot3";
 		while(true){
 			System.out.println("Create a new contract:");
 			System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
@@ -37,43 +39,26 @@ public class RabbitmqProducerExampleApplication {
 			StringBuilder builder = new StringBuilder();
 			builder.append("Hospital1,Address1,").append(contract);
 			contract = builder.toString();
-			System.out.println(contract);
+			producer.sendTo(routingKey, contract);
 		}
 	}
 
 	@Value("${myqueue}")
 	String queue;
-
-	@Value("${myqueue2}")
-	String queue2;
-
 	@Value("${myexchange}")
 	String exchange;
-	
-	@Value("${routingkey}")
-	String routingkey;
-
-
 	@Bean
 	Queue queue() {
 		return new Queue(queue, true);
 	}
-
-	@Bean
-	Queue queue2() {
-		return new Queue(queue2, true);
-	}
-
 	@Bean
 	DirectExchange exchange() {
 		return new DirectExchange(exchange);
 	}
-
 	@Bean
 	Binding binding(Queue queue2, DirectExchange exchange) {
-		return BindingBuilder.bind(queue2).to(exchange).with(routingkey);
+		return BindingBuilder.bind(queue2).to(exchange).with(queue);
 	}
-
 	/*
 	 * Registrujemo bean koji ce sluziti za konekciju na RabbitMQ gde se mi u
 	 * primeru kacimo u lokalu.
