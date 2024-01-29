@@ -1,17 +1,18 @@
 package ftn.isa.controller;
 
 import ftn.isa.domain.*;
-import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.dto.EquipmentAmountDTO;
-import ftn.isa.dto.PickUpAppointmentDTO;
 import ftn.isa.dto.ReservationDTO;
 import ftn.isa.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.persistence.LockModeType;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -43,6 +44,7 @@ public class ReservationController {
         return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
     }
 
+    @Transactional
     @PutMapping(value = "/cancel/{id}")
     public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable Integer id) {
         Reservation r = service.getOne(id);
@@ -170,11 +172,10 @@ public class ReservationController {
         reservation.setCustomer(reservationDto.getCustomer());
         reservation.setEquipment(reservationDto.getEquipment());
         reservation.setStatus(ReservationStatus.PENDING);
-        PickUpAppointment pua = reservationDto.getPickUpAppointment();
-        pua.setFree(false);
-        pua = pickupService.save(pua);
-        reservation.setPickUpAppointment(pua);
-
+        reservation = service.save(reservation, reservationDto);
+        if(reservation==null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         String to = reservationDto.getCustomer().getEmail();
         String subject = "Reservation Confirmation";
         String body = generateEmailBody(reservationDto);
@@ -185,7 +186,7 @@ public class ReservationController {
         try {
             emailService.sendWithQRCode(to, body, subject, qrCodeText);
             System.out.println("Reservation information email sent successfully!");
-            reservation = service.save(reservation);
+
         } catch (MessagingException e) {
             System.out.println("Exception sending email: " + e.toString());
             return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.BAD_REQUEST);
@@ -193,6 +194,7 @@ public class ReservationController {
 
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);
     }
+
 
     private String generateEmailBody(ReservationDTO reservationDto) {
         String customerName = getCustomerName(reservationDto.getCustomer());

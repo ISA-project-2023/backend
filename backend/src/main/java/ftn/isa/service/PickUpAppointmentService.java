@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -31,6 +32,7 @@ public class PickUpAppointmentService {
     public List<PickUpAppointment> findAll() {
         return pickUpAppointmentRepository.findAll();
     }
+    @Transactional
     public List<PickUpAppointmentDTO> findCustom(LocalDateTime date, Integer companyId){
         List<CompanyAdmin> companyAdmins1 = companyAdminRepository.findAll();
         List<CompanyAdminDTO> companyAdmins = new ArrayList<>();
@@ -74,6 +76,7 @@ public class PickUpAppointmentService {
     public Page<PickUpAppointment> findAll(Pageable page) {
         return pickUpAppointmentRepository.findAll(page);
     }
+    @Transactional
     public PickUpAppointment save(PickUpAppointment pickUpAppointment) { return pickUpAppointmentRepository.save(pickUpAppointment); }
     public PickUpAppointment cancel(int pickUpAppointmentId) {
         PickUpAppointment app = findOne(pickUpAppointmentId);

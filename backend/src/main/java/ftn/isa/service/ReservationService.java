@@ -7,8 +7,11 @@ import ftn.isa.repository.ICompanyEquipmentRepository;
 import ftn.isa.repository.IPickUpAppointmentRepository;
 import ftn.isa.repository.IReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,10 +23,25 @@ public class ReservationService {
     private IReservationRepository reservationRepository;
     @Autowired
     private ICompanyEquipmentRepository companyEquipmentRepository;
-    public Reservation save(Reservation reservation){
+    @Autowired
+    private PickUpAppointmentService pickupService;
+    @Transactional
+    public Reservation save(Reservation reservation, ReservationDTO reservationDto){
+        PickUpAppointment pua = reservationDto.getPickUpAppointment();
         if(reservation.getId()==null){
+            //Useful for testing concurrent access to db
+//            try {
+//                Thread.sleep(10000);
+//            }catch (Exception e){
+//
+//            }
             List<CompanyEquipment> c = companyEquipmentRepository.findAllByCompany(reservation.getCompany());
             List<CompanyEquipment> c1 = new ArrayList<>();
+            if(!isAdminAvailable(pua)) //if Admin is already busy at the time
+                return null;
+            pua.setFree(false);
+            pua = pickupService.save(pua);
+            reservation.setPickUpAppointment(pua);
             for(CompanyEquipment ce: c){
                 for(EquipmentAmountDTO eq: reservation.getEquipment()){
                     if(eq.getEquipment().getId()==ce.getEquipment().getId()){
@@ -40,6 +58,16 @@ public class ReservationService {
             }
         }
         return reservationRepository.save(reservation);
+    }
+    private boolean isAdminAvailable(PickUpAppointment pua) {
+        List<PickUpAppointment> pickups = pickupService.findByCompanyAdminId(pua.getCompanyAdmin().getId());
+        for(PickUpAppointment dto: pickups){
+            if(!(pua.getDate().isAfter(dto.getDate().plusHours(dto.getDuration()))
+                    ||  pua.getDate().plusHours(pua.getDuration()).isBefore(dto.getDate()))){
+                return false;
+            }
+        }
+        return true;
     }
     public Reservation getOne(int id){ return reservationRepository.findById(id).orElseGet(null); }
     public List<Reservation> getAll(){
@@ -77,7 +105,7 @@ public class ReservationService {
         Reservation r = getOne(id);
         if (r != null) {
             r.setStatus(ReservationStatus.PICKED_UP);
-            return save(r);
+            return save(r, new ReservationDTO(r));
         }
         return null;
     }
@@ -103,7 +131,7 @@ public class ReservationService {
                 companyEquipmentRepository.save(ce);
             }
             r.setStatus(ReservationStatus.CANCELED);
-            return save(r);
+            return save(r, new ReservationDTO(r));
         }
         return null;
     }
@@ -112,7 +140,7 @@ public class ReservationService {
         Reservation r = getOne(id);
         if (r != null) {
             r.setStatus(ReservationStatus.EXPIRED);
-            return save(r);
+            return save(r,new ReservationDTO(r));
         }
         return null;
     }
