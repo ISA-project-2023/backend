@@ -34,6 +34,9 @@ public class PrivateHospitalConsumer {
     @RabbitListener(
             bindings = @QueueBinding(value = @Queue(value = "${myqueue3}", durable = "true"),
                     exchange = @Exchange(value = "${exchange2}")))
+//     bindings = @QueueBinding(value = @Queue(value = "${myqueue3}", durable = "true"),
+//                    exchange = @Exchange(value = "${exchange2}"), key = "spring-boot3"))
+
     public void handler(String message){
         log.info("Consumer> " + message);
         ContractDTO contractDTO = deserializeMessageToContractDTO(message);

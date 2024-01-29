@@ -17,16 +17,35 @@ public class PrivateHospitalController {
     @Autowired
     public PrivateHospitalController(RestTemplate rt) { restTemplate = rt; }
 
-    @PostMapping(value="/cancel", consumes="text/plain")
-    public void cancelContractMessage(@RequestBody String text) {
-        String url = "http://localhost:8085/api/cancel/spring-boot3";
-        restTemplate.postForObject(url, text, String.class);
+    // CANCEL CONTRACT
+//    @PostMapping(value="/cancel", consumes="text/plain")
+//    public void cancelContractMessage(@RequestBody String text) {
+//        String url = "http://localhost:8085/api/cancel/spring-boot4";
+//        restTemplate.postForObject(url, text, String.class);
+//    }
+    public static void sendCancellationMessage(String text) {
+        try {
+            String url = "http://localhost:8085/api/cancel/spring-boot4";
+            restTemplate.postForObject(url, text, String.class);
+        } catch(Exception e) {
+            log.error("Error sending message to external app: " + e.getMessage());
+        }
     }
 
+    // DELIVERY
     // TODO - monthly deliver
 //    @PostMapping(value="/deliver", consumes="text/plain")
 //    public void deliverContractMessage(@RequestBody String text) {
-//        String url = "http://localhost:8085/api/deliver/spring-boot3";
+//        String url = "http://localhost:8085/api/deliver/spring-boot5";
 //        restTemplate.postForObject(url, text, String.class);
+//    }
+
+//    public static void sendDeliveryMessage(String text) {
+//        try {
+//            String url = "http://localhost:8085/api/cancel/spring-boot3";
+//            restTemplate.postForObject(url, text, String.class);
+//        } catch(Exception e) {
+//            log.error("Error sending message to external app: " + e.getMessage());
+//        }
 //    }
 }
