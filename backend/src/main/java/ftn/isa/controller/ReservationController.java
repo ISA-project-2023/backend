@@ -32,6 +32,8 @@ public class ReservationController {
     private PickUpAppointmentService pickUpAppointmentService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CompanyEquipmentService companyEquipmentService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationDTO>> getAllReservations() {
@@ -82,10 +84,24 @@ public class ReservationController {
     @PutMapping(value = "/markAsPicked/{id}", consumes = "application/json")
     public ResponseEntity<ReservationDTO> deliverReservation(@PathVariable Integer id, @RequestBody ReservationDTO reservationDto) {
         Reservation r = service.getOne(id);
+        List<CompanyEquipment> companyEquipmentList = companyEquipmentService.findAll();
         if (r == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Reservation res = service.pickUp(id);
+        for(EquipmentAmountDTO e : r.getEquipment()){
+            for(CompanyEquipment ca : companyEquipmentList) {
+                if(ca.getCompany().getId() == r.getCompany().getId() && e.getEquipment().getId() == ca.getEquipment().getId()) {
+                    if(ca.getQuantity() - e.getQuantity() >= 0) {
+                        CompanyEquipment companyEquipment = new CompanyEquipment(r.getCompany(), e.getEquipment(), ca.getQuantity() - e.getQuantity());
+                        companyEquipmentService.save(companyEquipment);
+                        break;
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }
+            }
+        }
 
         String to = r.getCustomer().getEmail();
         String subject = "Equipment successfully delivered!";

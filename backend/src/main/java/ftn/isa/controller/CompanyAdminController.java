@@ -124,4 +124,33 @@ public class CompanyAdminController {
         }
         return new ResponseEntity<>(companyAdminsDTO, HttpStatus.OK);
     }
+
+    @PostMapping(value="/add-existing")
+    public ResponseEntity<CompanyAdminDTO> addExistingCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO){
+        CompanyAdmin admin = companyAdminService.findOne(adminDTO.getId());
+        System.out.println(adminDTO.getUsername());
+        admin.setId(adminDTO.getId());
+        admin.setFirstName(adminDTO.getFirstName());
+        admin.setLastName(adminDTO.getLastName());
+        admin.setUsername(adminDTO.getUsername());
+        admin.setPassword(admin.getPassword());
+        admin.setEmail(adminDTO.getEmail());
+        admin.setPenaltyPoints(adminDTO.getPenaltyPoints());
+        admin.setRole(adminDTO.getRole());
+        admin.setCategory(adminDTO.getCategory());
+        admin.setEnabled(true);
+        System.out.println(admin.getFirstName());
+        System.out.println(admin.getLastName());
+        System.out.println(admin.getUsername());
+
+        String token = UUID.randomUUID().toString();
+        admin.setToken(token);
+
+        admin.setJobDescription(adminDTO.getJobDescription());
+        admin.setCompany(adminDTO.getCompany());
+        admin.setVerified(false);
+
+        admin = companyAdminService.save(admin);
+        return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
+    }
 }
