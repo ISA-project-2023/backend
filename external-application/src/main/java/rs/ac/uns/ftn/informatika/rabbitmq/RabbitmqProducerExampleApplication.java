@@ -10,28 +10,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/*
- * 
- * Za pokretanje primera potrebno je instalirati RabbitMQ - https://www.rabbitmq.com/download.html
- */
 @SpringBootApplication
+@CrossOrigin(origins = "http://localhost:4200")
 public class RabbitmqProducerExampleApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(RabbitmqProducerExampleApplication.class, args);
-
-		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(() -> generateRequest(), 0, 3, TimeUnit.SECONDS);
-
 	}
-	private static void generateRequest() {
+	static void generateRequest() {
 		String requestString = "Request!";
 		System.out.println(requestString);
 		ProducerController.sendRequestToOtherApp(requestString);
