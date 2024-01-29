@@ -3,7 +3,6 @@ package rs.ac.uns.ftn.informatika.rabbitmq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.apache.http.client.methods.HttpGet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -31,11 +30,5 @@ public class Producer {
 	public void sendTo(String routingkey, String message){
 		log.info("Sending> ... Message=[ " + message + " ] RoutingKey=[" + routingkey + "]");
 		this.rabbitTemplate.convertAndSend(routingkey, message);
-	}
-
-	private static final String CANCELLATION_ROUTING_KEY = "spring-boot4";
-	public void sendCancellationMessage(String message) {
-		log.info("Sending Cancellation> ... Message=[ " + message + " ] RoutingKey=[" + CANCELLATION_ROUTING_KEY + "]");
-		this.rabbitTemplate.convertAndSend(CANCELLATION_ROUTING_KEY, message);
 	}
 }

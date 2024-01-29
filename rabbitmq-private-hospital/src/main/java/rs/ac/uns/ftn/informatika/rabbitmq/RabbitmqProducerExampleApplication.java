@@ -21,8 +21,6 @@ public class RabbitmqProducerExampleApplication {
 	String queue3;
 	@Value("${myqueue4}")
 	String queue4;
-	@Value("${myqueue5}")
-	String queue5;
 
 	@Value("${myexchange2}")
 	String exchange;
@@ -31,8 +29,6 @@ public class RabbitmqProducerExampleApplication {
 	Queue queue3() { return new Queue(queue3, true); }
 	@Bean
 	Queue queue4() { return new Queue(queue4, true); }
-	@Bean
-	Queue queue5() { return new Queue(queue5, true); }
 	@Bean
 	DirectExchange exchange() { return new DirectExchange(exchange); }
 

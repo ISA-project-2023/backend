@@ -30,8 +30,10 @@ public class ProducerController {
 			System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
 			Scanner scanner = new Scanner(System.in);
 			String contract = scanner.nextLine();
-			contract = "Hospital1,Address1," + contract;
-			restTemplate.postForObject(url, contract, String.class);
+			if (!contract.isEmpty()){
+				contract = "Hospital1,Address1," + contract;
+				restTemplate.postForObject(url, contract, String.class);
+			}
 			//return contract;
 		}
 		//return "";
@@ -41,7 +43,6 @@ public class ProducerController {
 	@PostMapping(value="/cancel/{queue}", consumes = "text/plain")
 	public ResponseEntity<String> deliveryCanceled(@PathVariable("queue") String queue, @RequestBody String message) {
 		System.out.println("\nCancellation message from other app: \t" + message + "\n");
-		//producer.sendCancellationMessage(message);
 		return ResponseEntity.ok().build();
 	}
 
