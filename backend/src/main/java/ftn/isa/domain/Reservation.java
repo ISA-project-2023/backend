@@ -95,6 +95,7 @@ public class Reservation {
                 .append("Company: ").append(company != null ? company.getName() : "").append("\n")
                 .append("Customer: ").append(customer != null ? customer.getFirstName() + " " + customer.getLastName() : "").append("\n")
                 .append("Company Admin: ").append(pickUpAppointment.getCompanyAdmin() != null ? pickUpAppointment.getCompanyAdmin().getFirstName() + " " + pickUpAppointment.getCompanyAdmin().getLastName() : "").append("\n")
+                .append("Status: ").append(status).append("\n")
                 .append("Equipment: ");
 
         if (equipment != null) {
