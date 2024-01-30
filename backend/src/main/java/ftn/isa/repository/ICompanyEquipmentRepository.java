@@ -18,6 +18,9 @@ public interface ICompanyEquipmentRepository extends JpaRepository<CompanyEquipm
     public List<CompanyEquipment> findAll();
     @Lock(LockModeType.PESSIMISTIC_READ)
     public List<CompanyEquipment> findAllByCompany(Company company);
+    @Query("SELECT p FROM CompanyEquipment p WHERE p.company.Id=:company")
+    public List<CompanyEquipment> getAllByCompany(int company);
+
     public List<CompanyEquipment> findAllByEquipment(Equipment equipment);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     CompanyEquipment save(CompanyEquipment ce);

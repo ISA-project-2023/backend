@@ -24,10 +24,9 @@ public class CompanyService {
     private ICompanyEquipmentRepository companyEquipmentRepository;
 
 
-    @Transactional
     public Company findOneByName(String name){
         Company comp = companyRepository.findByName(name);
-        List<CompanyEquipment> companyEquipmentList = companyEquipmentRepository.findAllByCompany(comp);
+        List<CompanyEquipment> companyEquipmentList = companyEquipmentRepository.getAllByCompany(comp.getId());
         Set<Equipment> equipmentSet = new HashSet<>();
         for (CompanyEquipment companyEquipment:companyEquipmentList){
             equipmentSet.add(companyEquipment.getEquipment());
