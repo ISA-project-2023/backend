@@ -22,6 +22,7 @@ public class CompanyEquipmentService {
     public Page<CompanyEquipment> findAll(Pageable pageable) { return companyEquipmentRepository.findAll(pageable); }
 
     public List<CompanyEquipment> findAll() { return companyEquipmentRepository.findAll(); }
+    @Transactional
     public List<CompanyEquipment> findAllByCompany(Company company) { return companyEquipmentRepository.findAllByCompany(company); }
     public List<CompanyEquipment> findAllByEquipment(Equipment equipment) { return companyEquipmentRepository.findAllByEquipment(equipment); }
     public CompanyEquipment findOne(CompanyEquipmentId id) { return companyEquipmentRepository.findOne(id); }

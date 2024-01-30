@@ -110,6 +110,7 @@ public class ReservationService {
         return null;
     }
 
+    @Transactional
     public Reservation cancel(Integer id) {
         Reservation r = getOne(id);
         ReservationDTO res = new ReservationDTO(r);
