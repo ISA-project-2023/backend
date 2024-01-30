@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 public interface IPickUpAppointmentRepository extends JpaRepository<PickUpAppointment, Integer> {
     public Page<PickUpAppointment> findAll(Pageable pageable);
+    public List<PickUpAppointment> findAllByCompanyAdmin(CompanyAdmin companyAdmin);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     PickUpAppointment save(PickUpAppointment pickUpAppointment);

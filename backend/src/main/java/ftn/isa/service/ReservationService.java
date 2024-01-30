@@ -86,7 +86,19 @@ public class ReservationService {
     }
 
     private boolean isAdminAvailable(PickUpAppointment pua) {
-        List<PickUpAppointment> pickups = pickupService.findByCompanyAdminId(pua.getCompanyAdmin().getId());
+        List<PickUpAppointment> pickups = pickupService.findAllByCompanyAdmin(pua.getCompanyAdmin());
+        if(pua.getId() != null){
+            for(PickUpAppointment p: pickups){
+                if(pua.getId() == p.getId()){
+                    if(!p.isFree()){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+            }
+        }
         for(PickUpAppointment dto: pickups){
             if(!(pua.getDate().isAfter(dto.getDate().plusHours(dto.getDuration()))
                     ||  pua.getDate().plusHours(pua.getDuration()).isBefore(dto.getDate()))){
