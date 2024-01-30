@@ -12,15 +12,13 @@ import org.springframework.stereotype.Component;
 public class ProducerConsumer {
     private static final Logger log = LoggerFactory.getLogger(Producer.class);
 
-    /* @RabbitListener anotira metode za kreiranje handlera za bilo koju poruku koja pristize,
-     * sto znaci da ce se kreirati listener koji je konektovan na RabbitQM queue i koji ce
-     * prosledjivati poruke metodi. Listener ce konvertovati poruku u odgovorajuci tip koristeci
-     * odgovarajuci konvertor poruka (implementacija org.springframework.amqp.support.converter.MessageConverter interfejsa).   */
     @RabbitListener(
             bindings = @QueueBinding(value = @Queue(value = "${myqueue4}", durable = "true"),
                     exchange = @Exchange(value = "${myexchange2}")))
     public void handler(String message) {
         log.info("Consumer> " + message);
-        System.out.println();
+        System.out.println("\nMessage from other app: \t" + message);
+        System.out.println("Create a new contract:");
+        System.out.println("Equipment:   Amount:   Company:   Date(yyyy-mm-ddThh:MM:ss):   ");
     }
 }

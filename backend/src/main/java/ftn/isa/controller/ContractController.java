@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -51,7 +52,7 @@ public class ContractController {
         //If successful, send message to hospital about cancellation.
         if(contract != null){
             String message = contract.getCompany().getName() + " canceled delivery for this month.";
-            PrivateHospitalController.sendCancellationMessage(message);
+            //PrivateHospitalController.sendCancellationMessage(message);
             producer.sendTo("spring-boot4", message);
         }
         return new ResponseEntity<>(new ContractDTO(contract), HttpStatus.OK);
@@ -63,23 +64,52 @@ public class ContractController {
 //        //If successful, send message to hospital about delivery.
 //        if(contract != null){
 //            String message = contract.getCompany().getName() + " started delivery.";
-//            //PrivateHospitalController.sendDeliveryMessage(message);
-//            producer.sendTo("spring-boot3", message);
+//            PrivateHospitalController.sendDeliveryMessage(message);
+//            producer.sendTo("spring-boot4", message);
 //        }
 //        return new ResponseEntity<>(new ContractDTO(contract), HttpStatus.OK);
 //    }
-//    CompanyService companyService = new CompanyService();
-//    ContractService service = new ContractService();
-//    List<Contract> contracts = new ArrayList<>();
-//        for(var company: companyService.findAll()){
-//        List<Contract> contractsForCompany = service.findValidByCompany(company);
-//        if(contractsForCompany.get(0)!=null)
-//            contracts.add(contractsForCompany.get(0));
+
+    // TODO - fix this
+//    private void scheduleContractsDelivery(){
+//        //ContractService service = new ContractService();
+//        //List<Contract> validContracts = service.findAllValid(true);
+//        List<Contract> validContracts = contractService.findAllValid(true);
+//
+//
+//        // set schedule for every contract
+//        //List<ScheduledExecutorService> schedulers = new ArrayList<>();
+//        for(int i = 0; i<validContracts.size(); i++){
+//
+////            schedulers.set(i, Executors.newScheduledThreadPool(1));
+////            int finalI = i;
+////            //schedulers.get(i).scheduleAtFixedRate(() -> deliver(validContracts.get(finalI).getCompany().getName()), Duration.between(LocalDateTime.now(), validContracts.get(finalI).getDate()).toDays(), 30, TimeUnit.MINUTES);
+//
+////            delay = Duration.between(LocalDateTime.now(), validContracts.get(i).getDate()).toSeconds();
+////            schedulers.get(i).schedule(() -> startDelivery(validContracts.get(i), delay, TimeUnit.SECONDS););
+//        }
 //    }
-//    List<ScheduledExecutorService> schedulers = new ArrayList<>();
-//        for(int i = 0; i<contracts.size(); i++){
-//        schedulers.set(i, Executors.newScheduledThreadPool(1));
-//        int finalI = i;
-//        schedulers.get(i).scheduleAtFixedRate(() -> deliver(contracts.get(finalI).getCompany().getName()), Duration.between(LocalDateTime.now(), contracts.get(finalI).getDate()).toDays(), 30, TimeUnit.SECONDS);
+//
+//    private void startDelivery(Contract contract) {
+//        if(contract != null){
+//            String message = contract.getCompany().getName() + " started delivery!";
+//            Contract contractDeliverStarted = contractService.deliver(contract.getId());
+//            PrivateHospitalController.sendDeliveryMessage(message);
+//            producer.sendTo("spring-boot4", message);
+//        }
 //    }
+//
+////    // Add this method to your class
+////    private void shutdownExecutors(List<ScheduledExecutorService> schedulers) {
+////        for (ScheduledExecutorService scheduler : schedulers) {
+////            scheduler.shutdown();
+////        }
+////    }
+////
+////    // Call this method when your application is shutting down
+////// For example, you can add a @PreDestroy method in a @Component or @Service class
+////    @PreDestroy
+////    public void destroy() {
+////        shutdownExecutors(schedulers);
+////    }
 }

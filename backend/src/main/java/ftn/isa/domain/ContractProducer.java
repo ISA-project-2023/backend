@@ -18,9 +18,4 @@ public class ContractProducer {
         log.info("Sending> ... Message=[ " + message + " ] RoutingKey=[" + routingkey + "]");
         this.rabbitTemplate.convertAndSend(routingkey, message);
     }
-
-    public void send(String routingkey, String message) {
-        //log.info("Sending> ... Message=[ " + message + " ] RoutingKey=[" + routingkey + "]");
-        this.rabbitTemplate.convertAndSend(routingkey, message);
-    }
 }
