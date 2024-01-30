@@ -101,7 +101,8 @@ public class Producer {
 		double duration = summary.getDouble("duration");
 
 		System.out.println("Trajanje: " + duration);
-		this.rabbitTemplate.convertAndSend(exchange, routingkey, duration);
+		this.rabbitTemplate.convertAndSend(exchange, "spring-boot1", Double.toString(duration));
+		log.info("Sending> ... Message=[ " + duration + " ] Exchange=[" + exchange + "] RoutingKey=[" + "spring-boot1" + "]");
 		System.out.println(coordinates);
 
 		List<double[]> result = new ArrayList<>();

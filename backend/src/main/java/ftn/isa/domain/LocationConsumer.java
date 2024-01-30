@@ -26,9 +26,19 @@ public class LocationConsumer {
      */
 	@RabbitListener(
 		bindings = @QueueBinding(value = @Queue(value = "${myqueue2}", durable = "true"),
-                exchange = @Exchange(value = "${exchange}")))
+                exchange = @Exchange(value = "${exchange}", type="direct"),
+                key = "${myqueue2}"))
     public void handler(String message){
         log.info("Consumer> " + message);
+        controller.sendMessageToExternalApp(message);
+    }
+
+    @RabbitListener(
+            bindings = @QueueBinding(value = @Queue(value = "${myqueue}", durable = "true"),
+                    exchange = @Exchange(value = "${exchange}", type="direct"),
+                    key = "${myqueue}"))
+    public void handlerDuration(String message){
+        log.info("Consumer (duration)> " + message);
         controller.sendMessageToExternalApp(message);
     }
 }
