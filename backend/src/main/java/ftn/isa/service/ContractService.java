@@ -6,8 +6,8 @@ import ftn.isa.repository.IContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,6 +43,7 @@ public class ContractService {
     public List<Contract> findValidByCompany(Company company){
         return contractRepository.findAllByCompanyAndValid(company, true);
     }
+    public List<Contract> findAllValid(boolean valid) { return contractRepository.findAllByValid(valid); }
     public Contract cancel(Integer id){
         Contract con = contractRepository.findContractById(id);
         if(!con.isValid()
