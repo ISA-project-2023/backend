@@ -17,6 +17,9 @@ public interface ICompanyRepository extends JpaRepository<Company, Integer> {
 
     @Query("select s from Company s where s.Name = :name")
     public Company findByName(@Param("name") String name);
+
+    @Query("select s from Company s where s.Id = :id")
+    public Company find(@Param("id") int id);
     //public List<Equipment> findEquipment();
     //public List<Company> findAllByName(String name);
 }

@@ -40,7 +40,7 @@ public class CompanyService {
     //public List<Equipment> findEquipment() { return companyRepository.findEquipment(); }
     //public List<Company> findByName(String name) { return companyRepository.findAllByName(name); }
 
-    public Company findOne(Integer id) { return companyRepository.findById(id).orElseGet(null); }
+    public Company findOne(Integer id) { return companyRepository.find(id); }
     public Company save(Company company) { return companyRepository.save(company); }
     public void remove(Integer id) { companyRepository.deleteById(id); }
 }
