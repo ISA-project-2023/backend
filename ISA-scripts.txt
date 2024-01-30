@@ -1,0 +1,187 @@
+/*
+DROP TABLE public."contract";
+DROP TABLE public."reservation";
+DROP TABLE public."pick_up_appointment";
+DROP TABLE public."complaint_about_company";
+DROP TABLE public."complaint_about_admin";
+DROP TABLE public."company_equipment";
+DROP TABLE public."equipment";
+DROP TABLE public."customer";
+DROP TABLE public."system_admin";
+DROP TABLE public."company_admin";
+DROP TABLE public."user";
+DROP TABLE public."company";
+*/
+
+DELETE FROM public."contract";
+DELETE FROM public.reservation;
+DELETE FROM public."pick_up_appointment";
+DELETE FROM public."complaint_about_company";
+DELETE FROM public."complaint_about_admin";
+DELETE FROM public."company_equipment";
+DELETE FROM public."equipment";
+DELETE FROM public."customer";
+DELETE FROM public."system_admin";
+DELETE FROM public."company_admin";
+DELETE FROM public."user";
+DELETE FROM public."company";
+
+INSERT INTO public.equipment(
+    id, description, name, type)
+VALUES 
+    (101, 'Smanjuje otok kad vas ujede komarac', 'Lekovi za ujed komarca', 'tip1'),
+    (102, 'Spusta pritisak', 'Lekovi za smirenje', 'tip1'),
+    (103, 'Vitaminske tablete', 'Tablete C', 'tip2'),
+    (104, 'Aparat za merenje temperature, UPOZORENJE: sadrzi zivu!', 'Toplomer', 'tip2'),
+    (105, 'Aparat za merenje pritiska', 'Izmeri pritisak', 'tip2'),
+    (106, 'Kapi za oci', 'Vitalis', 'tip3'),
+    (107, 'Antibiotik', 'Amoxilin', 'tip1'),
+    (108, 'Analgetik', 'Paracetamol', 'tip1'),
+    (109, 'Antialergijske tablete', 'Claritin', 'tip1'),
+    (110, 'Inhalator za astmu', 'Ventolin', 'tip2'),
+    (111, 'Flasteri za rane', 'Bandaids', 'tip3');
+
+INSERT INTO public.company(
+    id, grade, location, name, start_time, end_time)
+VALUES 
+    (101, '4', 'New York', 'Medicine Solution', '09:00:00', '18:00:00'),
+    (102, '3', 'San Francisco', 'Innovate Medicine Equipment', '09:00:00', '18:00:00'),
+    (103, '5', 'Los Angeles', 'Future Med Group', '09:00:00', '18:00:00');  
+/*
+--more company examples
+    (104, '4', 'Chicago', 'MediTech Solutions', '08:30:00', '17:30:00'),
+    (105, '3', 'Houston', 'Health Innovations Inc.', '08:00:00', '17:00:00'),
+    (106, '5', 'Boston', 'Precision Health Solutions', '08:00:00', '18:00:00'),
+    (107, '4', 'Miami', 'MedEquip Technologies', '09:30:00', '18:30:00');	*/
+
+INSERT INTO public.company_equipment(
+	company_id, equipment_id, quantity)
+VALUES 
+    (101, 101, 100),
+    (101, 102, 100),
+    (101, 103, 100),
+    (101, 105, 100),
+    (102, 101, 100),
+    (102, 102, 100),
+    (102, 104, 100),
+    (103, 103, 100),
+    (103, 104, 100);
+
+INSERT INTO public."user"(
+    id, category, email, first_name, last_name, password, penalty_points, username, role, enabled, token, penaltymonth)
+VALUES 
+    (100, '', 'admin@example.com', 'Admin', 'Admin', 'aaa', 0, 'admin', 'SYSTEM_ADMIN', true, 'token', 2024.01),
+    (101, '', 'pera@example.com', 'Petar', 'Petrovic', 'aaa', 0, 'pera', 'COMPANY_ADMIN', true, 'token', 2024.01),
+    (102, '', 'zika@example.com', 'Zika', 'Zeljkovic', 'aaa', 0, 'zika', 'COMPANY_ADMIN', true, 'token', 2024.01),
+    (103, '', 'mira@example.com', 'Mira', 'Milojevic', 'aaa', 0, 'mira', 'COMPANY_ADMIN', true, 'token', 2024.01),
+    (104, '', 'sara@example.com', 'Sara', 'Zeljkovic', 'aaa', 0, 'sara',  'COMPANY_ADMIN', true, 'token', 2024.01),
+    (105, '', 'mia@example.com', 'Mia', 'Mandic', 'aaa', 0, 'mia', 'COMPANY_ADMIN', true, 'token', 2024.01),
+    (201, '', 'mika@example.com', 'Mika', 'Mikic', 'aaa', 0, 'mika', 'CUSTOMER', true, 'token', 2024.01),
+    (202, '', 'tea@example.com', 'Teodora', 'Mandic', 'aaa', 0, 'tea', 'CUSTOMER', true, 'token', 2024.01);
+
+
+
+INSERT INTO public.system_admin(
+    id, is_activated)
+VALUES (100, true);
+
+INSERT INTO public.company_admin(
+    id, company_id, job_description, is_verified)
+VALUES 
+    (101, 101, 'sef', true),
+    (102, 102, 'HR radnik', true),
+    (103, 102, 'administrativni radnik', true),
+    (104, 103, 'menadzer', true),
+    (105, 103, 'administrativni radnik', true);
+
+INSERT INTO public.customer(
+    id, phone_number, country, city, company_info)
+VALUES  
+    (201, '0656566565', 'Serbia', 'Beograd', 'Bolnica na Miseluku'),
+    (202, '0624445553', 'Serbia', 'Backa Palanka', 'Opstinska bolnica');
+
+
+INSERT INTO public.pick_up_appointment(
+    id, company_admin_id, date, duration,  is_free)
+VALUES 
+    -- Company Admin 101
+    (101, 101, to_timestamp('2024-02-05 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, false), --reserved
+    (102, 101, to_timestamp('2024-02-05 14:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+    (103, 101, to_timestamp('2024-02-06 11:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, false), --reserved
+    (104, 101, to_timestamp('2024-02-06 13:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (105, 101, to_timestamp('2024-02-07 14:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+
+ -- Company Admin 102
+    (106, 102, to_timestamp('2024-02-04 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, false), --reserved
+    (107, 102, to_timestamp('2024-02-05 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+    (108, 102, to_timestamp('2024-02-05 16:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (109, 102, to_timestamp('2024-02-06 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (110, 102, to_timestamp('2024-02-07 11:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+
+ -- Company Admin 103
+    (111, 103, to_timestamp('2024-02-05 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, false), --reserved
+    (112, 103, to_timestamp('2024-02-06 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+    (113, 103, to_timestamp('2024-02-06 16:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (114, 103, to_timestamp('2024-02-07 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (115, 103, to_timestamp('2024-02-10 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+
+-- Company Admin 104
+    (116, 104, to_timestamp('2024-02-10 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (117, 104, to_timestamp('2024-02-10 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+    (118, 104, to_timestamp('2024-02-11 16:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (119, 104, to_timestamp('2024-02-12 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (120, 104, to_timestamp('2024-02-13 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+
+    -- Company Admin 105
+    (121, 105, to_timestamp('2024-02-06 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (122, 105, to_timestamp('2024-02-06 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true),
+    (123, 105, to_timestamp('2024-02-06 16:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (124, 105, to_timestamp('2024-02-07 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, true),
+    (125, 105, to_timestamp('2024-02-09 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, true);
+
+
+
+-- Reservations
+INSERT INTO public.reservation(
+	id, employee_id, pick_up_appointment_id, company_id, status, equipment) 
+VALUES 
+    (101, 201, 101, 101, 'PENDING', 
+'[
+	{"equipment": {"id":101,"name":"Lekovi za ujed komarca","type":"tip1","description":"Smanjuje otok kad vas ujede komarac"}, "quantity": 5},
+	{"equipment": {"id":103,"name":"Tablete C","type":"tip2","description":"Vitaminske tablete"}, "quantity": 5}
+]'), 
+    (102, 201, 103, 101, 'PENDING', 
+'[
+	{"equipment": {"id":105,"name":"Vitalis","type":"tip3","description":"Kapi za oci"}, "quantity": 5}
+]'), 
+    (103, 202, 111, 102, 'PENDING', 
+'[
+	{"equipment": {"id":104,"name":"Toplomer","type":"tip2","description":"Aparat za merenje temperature, UPOZORENJE: sadrzi zivu!"}, "quantity": 5}
+]'), 
+    (104, 202, 106, 102, 'PENDING', 
+'[
+	{"equipment": {"id":102,"name":"Lekovi za smirenje","type":"tip1","description":"Spusta pritisak"}, "quantity": 5}
+]'); 
+
+
+-- Contracts
+INSERT INTO public.contract(
+	id, company_id, equipment_id, valid, amount, date, hospital, hospital_address)
+VALUES 
+    (501, 101, 102, true, 5, to_timestamp('2024-02-09 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Hospital1', 'Address1'),
+    (502, 102, 104, true, 5, to_timestamp('2024-02-09 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Hospital1', 'Address1'),
+    (503, 103, 103, true, 5, to_timestamp('2024-02-09 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Hospital1', 'Address1');
+/*
+-- new contracts valid input examples: 
+-- Company 101
+Lekovi za ujed komarca,5,Medicine Solution,2024-02-15T12:00:00
+Tablete C,25,Medicine Solution,2024-02-10T12:00:00
+
+-- Company 102
+Lekovi za smirenje,15,Innovate Medicine Equipment,2024-03-14T12:00:00
+Toplomer,5,Innovate Medicine Equipment,2024-02-11T12:00:00
+
+-- Company 103
+Tablete C,7,Future Med Group,2024-02-25T12:00:00
+Toplomer,3,Future Med Group,2024-02-04T12:00:00
+*/
