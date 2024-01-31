@@ -77,7 +77,41 @@ public class PickUpAppointmentService {
         return pickUpAppointmentRepository.findAll(page);
     }
     @Transactional
-    public PickUpAppointment save(PickUpAppointment pickUpAppointment) { return pickUpAppointmentRepository.save(pickUpAppointment); }
+    public PickUpAppointment save(PickUpAppointment pickUpAppointment) {
+        boolean ok = isAdminAvailable(pickUpAppointment);
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e){
+//            // Handle the exception appropriately
+//        }
+        if (ok) {
+            return pickUpAppointmentRepository.save(pickUpAppointment);
+        }
+        return null;
+    }
+    private boolean isAdminAvailable(PickUpAppointment pua) {
+        List<PickUpAppointment> pickups = pickUpAppointmentRepository.findAllByCompanyAdmin(pua.getCompanyAdmin());
+        if(pua.getId() != null){
+            for(PickUpAppointment p: pickups){
+                if(pua.getId() == p.getId()){
+                    if(!p.isFree()){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+            }
+        }
+        for(PickUpAppointment dto: pickups){
+            if(!(pua.getDate().isAfter(dto.getDate().plusHours(dto.getDuration()))
+                    ||  pua.getDate().plusHours(pua.getDuration()).isBefore(dto.getDate()))){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public PickUpAppointment cancel(int pickUpAppointmentId) {
         PickUpAppointment app = findOne(pickUpAppointmentId);
         app.setFree(true);
@@ -90,7 +124,6 @@ public class PickUpAppointmentService {
     public List<PickUpAppointment> findAllByCompanyAdmin(CompanyAdmin companyAdmin) {
         return pickUpAppointmentRepository.findAllByCompanyAdmin(companyAdmin);
     }
-    public List<PickUpAppointment> findByCompanyAdminId(Integer companyAdmin){ return pickUpAppointmentRepository.findAllByCompanyAdminId(companyAdmin); }
     public List<PickUpAppointment> findAllByCompanyAdminOnSameDay(CompanyAdmin companyAdmin, LocalDateTime date) {
         LocalDateTime startDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), companyAdmin.getCompany().getStartTime().getHour(), companyAdmin.getCompany().getStartTime().getMinute(), companyAdmin.getCompany().getStartTime().getSecond());
         LocalDateTime endDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), companyAdmin.getCompany().getEndTime().getHour(), companyAdmin.getCompany().getEndTime().getMinute(), companyAdmin.getCompany().getEndTime().getSecond());
