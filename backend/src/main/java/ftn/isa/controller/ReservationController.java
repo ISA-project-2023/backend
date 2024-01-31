@@ -182,12 +182,16 @@ public class ReservationController {
     }
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReservationDTO> saveReservation(@RequestBody ReservationDTO reservationDto) {
-
-        Reservation reservation = new Reservation();
-        reservation.setCompany(reservationDto.getCompany());
-        reservation.setCustomer(reservationDto.getCustomer());
-        reservation.setEquipment(reservationDto.getEquipment());
+        Reservation reservation = new Reservation(
+                reservationDto.getId(),
+                reservationDto.getPickUpAppointment(),
+                reservationDto.getCustomer(),
+                reservationDto.getStatus(),
+                reservationDto.getCompany()
+        );
+        reservation.setId(null);
         reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setEquipment(reservationDto.getEquipment());
         reservation = service.save(reservation, reservationDto);
         if(reservation==null){
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
