@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaftLib", "RaftLib\RaftLib.csproj", "{976C67B3-BC52-4968-9F90-7D452E30C398}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaftClient", "RaftClient\RaftClient.csproj", "{E6811102-58F5-47FE-9098-E043A92F7852}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaftServer", "RaftServer\RaftServer.csproj", "{7B292305-A610-4DE0-BE30-38939BEF854C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{976C67B3-BC52-4968-9F90-7D452E30C398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{976C67B3-BC52-4968-9F90-7D452E30C398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{976C67B3-BC52-4968-9F90-7D452E30C398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{976C67B3-BC52-4968-9F90-7D452E30C398}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6811102-58F5-47FE-9098-E043A92F7852}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6811102-58F5-47FE-9098-E043A92F7852}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6811102-58F5-47FE-9098-E043A92F7852}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6811102-58F5-47FE-9098-E043A92F7852}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B292305-A610-4DE0-BE30-38939BEF854C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B292305-A610-4DE0-BE30-38939BEF854C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B292305-A610-4DE0-BE30-38939BEF854C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B292305-A610-4DE0-BE30-38939BEF854C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C3BF77B0-6A49-4CFB-963A-A6B800716566}
+	EndGlobalSection
+EndGlobal
