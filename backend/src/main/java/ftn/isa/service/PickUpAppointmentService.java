@@ -87,6 +87,9 @@ public class PickUpAppointmentService {
         pickUpAppointmentRepository.deleteById(id);
     }
 
+    public List<PickUpAppointment> findAllByCompanyAdmin(CompanyAdmin companyAdmin) {
+        return pickUpAppointmentRepository.findAllByCompanyAdmin(companyAdmin);
+    }
     public List<PickUpAppointment> findByCompanyAdminId(Integer companyAdmin){ return pickUpAppointmentRepository.findAllByCompanyAdminId(companyAdmin); }
     public List<PickUpAppointment> findAllByCompanyAdminOnSameDay(CompanyAdmin companyAdmin, LocalDateTime date) {
         LocalDateTime startDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), companyAdmin.getCompany().getStartTime().getHour(), companyAdmin.getCompany().getStartTime().getMinute(), companyAdmin.getCompany().getStartTime().getSecond());

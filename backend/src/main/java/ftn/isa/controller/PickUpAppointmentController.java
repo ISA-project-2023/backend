@@ -154,7 +154,7 @@ public class PickUpAppointmentController {
     }
     @PostMapping(value = "/findByCompanyAdmin")
     public ResponseEntity<List<PickUpAppointmentDTO>> getAppointmentsByCompanyAdmins(@RequestBody CompanyAdmin companyAdmin) {
-        List<PickUpAppointment> appointments = service.findByCompanyAdminId(companyAdmin.getId());
+        List<PickUpAppointment> appointments = service.findAllByCompanyAdmin(companyAdmin);
         List<PickUpAppointment> filtered = filterOutOldDates(appointments);
 
         List<PickUpAppointmentDTO> pickUpAppointmentsDTO = new ArrayList<>();
@@ -169,7 +169,7 @@ public class PickUpAppointmentController {
         List<PickUpAppointment> appointments = new ArrayList<>();
         List<CompanyAdmin> admins = companyAdminService.findAllByCompany(company);
         for (CompanyAdmin ca : admins) {
-            List<PickUpAppointment> adminsAppointment = service.findByCompanyAdminId(ca.getId());
+            List<PickUpAppointment> adminsAppointment = service.findAllByCompanyAdmin(ca);
             appointments.addAll(adminsAppointment);
         }
         List<PickUpAppointment> filtered = filterOutOldDates(appointments);

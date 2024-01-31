@@ -2,14 +2,18 @@ package ftn.isa.controller;
 
 import ftn.isa.domain.Company;
 import ftn.isa.domain.CompanyAdmin;
+import ftn.isa.domain.User;
 import ftn.isa.dto.CompanyAdminDTO;
 import ftn.isa.service.CompanyAdminService;
+import ftn.isa.service.EmailService;
+import ftn.isa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -23,6 +27,10 @@ import java.util.UUID;
 public class CompanyAdminController {
     @Autowired
     private CompanyAdminService companyAdminService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private EmailService emailService;
     @Autowired
     private HttpSession session;
 
@@ -57,11 +65,11 @@ public class CompanyAdminController {
     }
 
     @PostMapping(consumes = "application/json",value = "/{password}")
-    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO, @PathVariable String password) {
+    public ResponseEntity<CompanyAdminDTO> saveCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO, @PathVariable String password)  throws MessagingException {
 
         CompanyAdmin admin = new CompanyAdmin();
 
-        admin.setId(adminDTO.getId());
+        admin.setId(null);
         admin.setFirstName(adminDTO.getFirstName());
         admin.setLastName(adminDTO.getLastName());
         admin.setUsername(adminDTO.getUsername());
@@ -70,10 +78,7 @@ public class CompanyAdminController {
         admin.setPenaltyPoints(adminDTO.getPenaltyPoints());
         admin.setRole(adminDTO.getRole());
         admin.setCategory(adminDTO.getCategory());
-        admin.setEnabled(true);
-        System.out.println(admin.getFirstName());
-        System.out.println(admin.getLastName());
-        System.out.println(admin.getUsername());
+        admin.setEnabled(false);
 
         String token = UUID.randomUUID().toString();
         admin.setToken(token);
@@ -82,7 +87,11 @@ public class CompanyAdminController {
         admin.setCompany(adminDTO.getCompany());
         admin.setVerified(false);
 
+        emailService.send(admin.getEmail(), generateNewCompanyAdminEmailBody(admin, token), "ISA Project - New Company Admin User");
         admin = companyAdminService.save(admin);
+        if (admin == null ){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
     }
 
@@ -126,7 +135,7 @@ public class CompanyAdminController {
     }
 
     @PostMapping(value="/add-existing")
-    public ResponseEntity<CompanyAdminDTO> addExistingCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO){
+    public ResponseEntity<CompanyAdminDTO> addExistingCompanyAdmin(@RequestBody CompanyAdminDTO adminDTO) throws MessagingException{
         CompanyAdmin admin = companyAdminService.findOne(adminDTO.getId());
         System.out.println(adminDTO.getUsername());
         admin.setId(adminDTO.getId());
@@ -138,10 +147,7 @@ public class CompanyAdminController {
         admin.setPenaltyPoints(adminDTO.getPenaltyPoints());
         admin.setRole(adminDTO.getRole());
         admin.setCategory(adminDTO.getCategory());
-        admin.setEnabled(true);
-        System.out.println(admin.getFirstName());
-        System.out.println(admin.getLastName());
-        System.out.println(admin.getUsername());
+        admin.setEnabled(false);
 
         String token = UUID.randomUUID().toString();
         admin.setToken(token);
@@ -150,7 +156,25 @@ public class CompanyAdminController {
         admin.setCompany(adminDTO.getCompany());
         admin.setVerified(false);
 
+        emailService.send(admin.getEmail(), generateNewCompanyAdminEmailBody(admin, token), "ISA Project - New Company Admin User");
         admin = companyAdminService.save(admin);
+        if (admin == null ){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
+    }
+
+    private String generateNewCompanyAdminEmailBody(CompanyAdmin admin, String activationLink) {
+        String userName = admin.getFirstName() + " " + admin.getLastName();
+        String fullActivationLink = "http://localhost:4200/activate/" + activationLink;
+
+        return  "<p>Dear <strong>" + userName + "</strong>,</p>\n" +
+                "<p>Thank you for choosing our service! We're excited to have you on board.</p>\n" +
+                "<p>Your registration is almost complete. Please click the following link to activate your account:</p>\n" +
+                "<p><a href=\"" + fullActivationLink + "\">Activation Link</a></p>\n\n" +
+                "<p>Your username is: <strong>" + admin.getUsername() + "</strong>  and your password is: <strong>" + admin.getPassword() + "</strong></p>\n\n" +
+                "<p>This is a password that system admin provided so please change it as soon as possible!</p>\n" +
+                "<p>If you have any questions, feel free to contact our support team.</p>\n\n" +
+                "<p>Best regards,<br/>ISA project members</p>";
     }
 }
