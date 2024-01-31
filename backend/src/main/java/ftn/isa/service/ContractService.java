@@ -48,7 +48,7 @@ public class ContractService {
         Contract con = contractRepository.findContractById(id);
         if(!con.isValid()
                 || con.getDate().isBefore(LocalDateTime.now().plusDays(3))
-                || con.getDate().isAfter(LocalDateTime.now().plusMonths(1))){
+                || con.getDate().isAfter(LocalDateTime.now().plusMonths(1).plusDays(1))){
             return null;
         }
         con.setDate(con.getDate().plusMonths(1));
