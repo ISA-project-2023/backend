@@ -7,6 +7,7 @@ import ftn.isa.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,6 +17,10 @@ import java.util.List;
 public class UserService {
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     public User findOne(Integer id) {
         return userRepository.findById(id).orElseGet(null);
     }
@@ -59,4 +64,29 @@ public class UserService {
         }
         return user;
     }
+
+    public Object fetchUser(String id) {
+        // Provera da li podaci već postoje u kešu
+        Object cachedData = redisTemplate.opsForValue().get(id);
+
+        if (cachedData != null) {
+            // Podaci su već u kešu, koristi ih
+            return cachedData;
+        } else {
+            // Podaci nisu u kešu, idemo do baze podataka
+            Object fetchedData = fetchDataFromDatabase(id);
+
+            // Ažuriranje keša sa novim podacima
+            redisTemplate.opsForValue().set(id, fetchedData);
+
+            return fetchedData;
+        }
+    }
+    private Object fetchDataFromDatabase(String id) {
+        Integer userId = Integer.parseInt(id);
+        User user = userRepository.findById(userId).orElse(null);
+
+        return user;
+    }
+
 }
