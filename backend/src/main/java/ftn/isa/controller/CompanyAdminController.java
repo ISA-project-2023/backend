@@ -87,8 +87,8 @@ public class CompanyAdminController {
         admin.setCompany(adminDTO.getCompany());
         admin.setVerified(false);
 
-        emailService.send(admin.getEmail(), generateNewCompanyAdminEmailBody(admin, token), "ISA Project - New Company Admin User");
         admin = companyAdminService.save(admin);
+        emailService.send(admin.getEmail(), generateNewCompanyAdminEmailBody(admin, token), "ISA Project - New Company Admin User");
         if (admin == null ){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -156,17 +156,30 @@ public class CompanyAdminController {
         admin.setCompany(adminDTO.getCompany());
         admin.setVerified(false);
 
-        emailService.send(admin.getEmail(), generateNewCompanyAdminEmailBody(admin, token), "ISA Project - New Company Admin User");
         admin = companyAdminService.save(admin);
+        emailService.send(admin.getEmail(), generateNewCompanyAdminEmailBody(admin, token), "ISA Project - New Company Admin User");
         if (admin == null ){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new CompanyAdminDTO(admin), HttpStatus.CREATED);
     }
 
+    @GetMapping("/activate/{token}")
+    public ResponseEntity<String> activateCompanyAdminAccount(@PathVariable String token) {
+        User companyAdmin = userService.findByToken(token);
+
+        if (companyAdmin != null){
+            companyAdmin.setEnabled(true);
+            userService.save(companyAdmin);
+            return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid activation token", HttpStatus.NOT_FOUND);
+        }
+    }
+
     private String generateNewCompanyAdminEmailBody(CompanyAdmin admin, String activationLink) {
         String userName = admin.getFirstName() + " " + admin.getLastName();
-        String fullActivationLink = "http://localhost:4200/activate/" + activationLink;
+        String fullActivationLink = "http://localhost:4200/companyAdmin/activate/"+ admin.getId().toString() + "/" + activationLink;
 
         return  "<p>Dear <strong>" + userName + "</strong>,</p>\n" +
                 "<p>Thank you for choosing our service! We're excited to have you on board.</p>\n" +

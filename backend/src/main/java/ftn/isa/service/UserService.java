@@ -21,6 +21,7 @@ public class UserService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    public User findByToken(String token) { return userRepository.findByToken(token); }
     public User findOne(Integer id) {
         return userRepository.findById(id).orElseGet(null);
     }
