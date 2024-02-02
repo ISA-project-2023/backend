@@ -32,11 +32,13 @@ public class User {
     @Column(name = "token", nullable = false)
     private String token;
 
+    @Column(name="penaltymonth", nullable = false)
+    private double penaltyMonth;
     public User() {
         super();
     }
 
-    public User(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category) {
+    public User(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category,double penaltyMonth) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -46,6 +48,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.category = category;
+        this.penaltyMonth = penaltyMonth;
     }
     public Integer getId() {
         return id;
@@ -133,6 +136,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public double getPenaltyMonth() {
+        return penaltyMonth;
+    }
+
+    public void setPenaltyMonth(double penaltyMonth) {
+        this.penaltyMonth = penaltyMonth;
     }
 
     @Override

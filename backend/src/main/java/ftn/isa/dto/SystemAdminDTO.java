@@ -11,7 +11,7 @@ public class SystemAdminDTO extends UserDTO {
     public SystemAdminDTO(SystemAdmin systemAdmin){
 
         super(systemAdmin.getId(), systemAdmin.getUsername(), systemAdmin.getEmail(), systemAdmin.getPenaltyPoints(), systemAdmin.getRole(),
-                systemAdmin.getFirstName(), systemAdmin.getLastName(), systemAdmin.getCategory());
+                systemAdmin.getFirstName(), systemAdmin.getLastName(), systemAdmin.getCategory(), systemAdmin.getPenaltyMonth());
         this.isActivated = systemAdmin.getIsActivated();
     }
 

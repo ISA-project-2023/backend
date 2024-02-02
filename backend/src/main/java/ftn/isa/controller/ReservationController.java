@@ -1,21 +1,21 @@
 package ftn.isa.controller;
 
 import ftn.isa.domain.*;
-import ftn.isa.dto.CompanyAdminDTO;
-import ftn.isa.dto.PickUpAppointmentDTO;
+import ftn.isa.dto.EquipmentAmountDTO;
 import ftn.isa.dto.ReservationDTO;
-import ftn.isa.service.CompanyAdminService;
-import ftn.isa.service.EmailService;
-import ftn.isa.service.PickUpAppointmentService;
-import ftn.isa.service.ReservationService;
+import ftn.isa.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.persistence.LockModeType;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +25,16 @@ import java.util.List;
 public class ReservationController {
     @Autowired
     private ReservationService service;
-
     @Autowired
     private PickUpAppointmentService pickupService;
-
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PickUpAppointmentService pickUpAppointmentService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CompanyEquipmentService companyEquipmentService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationDTO>> getAllReservations() {
@@ -42,9 +46,125 @@ public class ReservationController {
         return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
     }
 
+    @Transactional
+    @PutMapping(value = "/cancel/{id}")
+    public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable Integer id) {
+        Reservation r = service.getOne(id);
+
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        PickUpAppointment appointment = pickUpAppointmentService.cancel(r.getPickUpAppointment().getId());
+
+        if (appointment == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Reservation res = service.cancel(id);
+
+        User user = userService.findOne(res.getCustomer().getId());
+        int penaltyPoints = user.getPenaltyPoints();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime appointmentDate = appointment.getDate();
+
+        long hoursDifference = ChronoUnit.HOURS.between(now, appointmentDate);
+
+        if (hoursDifference < 24) {
+            penaltyPoints += 2;
+        } else {
+            penaltyPoints++;
+        }
+
+        user.setPenaltyPoints(penaltyPoints);
+        userService.save(user);
+
+        return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/markAsPicked/{id}", consumes = "application/json")
+    public ResponseEntity<ReservationDTO> deliverReservation(@PathVariable Integer id, @RequestBody ReservationDTO reservationDto) {
+        Reservation r = service.getOne(id);
+        List<CompanyEquipment> companyEquipmentList = companyEquipmentService.findAll();
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Reservation res = service.pickUp(id);
+        for(EquipmentAmountDTO e : r.getEquipment()){
+            for(CompanyEquipment ca : companyEquipmentList) {
+                if(ca.getCompany().getId() == r.getCompany().getId() && e.getEquipment().getId() == ca.getEquipment().getId()) {
+                    if(ca.getQuantity() - e.getQuantity() >= 0) {
+                        CompanyEquipment companyEquipment = new CompanyEquipment(r.getCompany(), e.getEquipment(), ca.getQuantity() - e.getQuantity());
+                        companyEquipmentService.save(companyEquipment);
+                        break;
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }
+            }
+        }
+
+        String to = r.getCustomer().getEmail();
+        String subject = "Equipment successfully delivered!";
+        String body = generateDeliveringConfirmationEmail(reservationDto);
+
+        try {
+            emailService.send(to, body, subject);
+            System.out.println("Reservation delivering email sent successfully!");
+        } catch (MessagingException e) {
+            System.out.println("Exception sending email: " + e.toString());
+            return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/markAsExpired/{id}")
+    public ResponseEntity<ReservationDTO> expiredReservation(@PathVariable Integer id) {
+        Reservation r = service.getOne(id);
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Reservation res = service.expired(id);
+        User user = userService.findOne(res.getCustomer().getId());
+        int penaltyPoints = user.getPenaltyPoints();
+        penaltyPoints += 2;
+        user.setPenaltyPoints(penaltyPoints);
+        userService.save(user);
+        return new ResponseEntity<>(new ReservationDTO(res), HttpStatus.OK);
+    }
+
+
     @GetMapping(value = "/allByCustomer/{id}")
     public ResponseEntity<List<ReservationDTO>> getAllByCustomer(@PathVariable Integer id) {
         List<Reservation> reservations = service.getAllByCustomer(id);
+        List<ReservationDTO> reservationDTOS = new ArrayList<>();
+        for (Reservation s : reservations) {
+            reservationDTOS.add(new ReservationDTO(s));
+        }
+        return new ResponseEntity<>(reservationDTOS, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/allQRCodesByCustomer/{id}")
+    public ResponseEntity<List<byte[]>> getAllQRCodesByCustomer(@PathVariable Integer id) {
+        List<Reservation> reservations = service.getAllByCustomer(id);
+        List<byte[]> qrCodes = new ArrayList<>();
+        int i = 0;
+        for(Reservation s: reservations) {
+            try {
+                qrCodes.add(emailService.generateQRCodeImage(s.toString(), 300, 300));
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }
+        }
+        System.out.println(qrCodes.size());
+        return new ResponseEntity<>(qrCodes, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/allPreviousByCustomer/{id}")
+    public ResponseEntity<List<ReservationDTO>> getAllPreviousByCustomer(@PathVariable Integer id) {
+        List<Reservation> reservations = service.getAllPreviousByCustomer(id);
         List<ReservationDTO> reservationDTOS = new ArrayList<>();
         for (Reservation s : reservations) {
             reservationDTOS.add(new ReservationDTO(s));
@@ -62,17 +182,20 @@ public class ReservationController {
     }
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReservationDTO> saveReservation(@RequestBody ReservationDTO reservationDto) {
-
-        Reservation reservation = new Reservation();
-        reservation.setCompany(reservationDto.getCompany());
-        reservation.setCustomer(reservationDto.getCustomer());
-        reservation.setEquipment(reservationDto.getEquipment());
+        Reservation reservation = new Reservation(
+                reservationDto.getId(),
+                reservationDto.getPickUpAppointment(),
+                reservationDto.getCustomer(),
+                reservationDto.getStatus(),
+                reservationDto.getCompany()
+        );
+        reservation.setId(null);
         reservation.setStatus(ReservationStatus.PENDING);
-        PickUpAppointment pua = reservationDto.getPickUpAppointment();
-        pua.setFree(false);
-        pua = pickupService.save(pua);
-        reservation.setPickUpAppointment(pua);
-
+        reservation.setEquipment(reservationDto.getEquipment());
+        reservation = service.save(reservation, reservationDto);
+        if(reservation==null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         String to = reservationDto.getCustomer().getEmail();
         String subject = "Reservation Confirmation";
         String body = generateEmailBody(reservationDto);
@@ -83,7 +206,7 @@ public class ReservationController {
         try {
             emailService.sendWithQRCode(to, body, subject, qrCodeText);
             System.out.println("Reservation information email sent successfully!");
-            reservation = service.save(reservation);
+
         } catch (MessagingException e) {
             System.out.println("Exception sending email: " + e.toString());
             return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.BAD_REQUEST);
@@ -91,6 +214,7 @@ public class ReservationController {
 
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);
     }
+
 
     private String generateEmailBody(ReservationDTO reservationDto) {
         String customerName = getCustomerName(reservationDto.getCustomer());
@@ -103,8 +227,8 @@ public class ReservationController {
                 + "<li><strong>Company:</strong> " + reservationDto.getCompany().getName() + "</li>"
                 + "<li><strong>Equipment:</strong> <br/>");
 
-        for (Equipment e : reservationDto.getEquipment()) {
-            mail.append(e.getName()).append(" (").append(e.getDescription()).append(")").append("<br/>");
+        for (EquipmentAmountDTO e : reservationDto.getEquipment()) {
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append("<br/>");
         }
 
         mail.append("</li>")
@@ -112,6 +236,31 @@ public class ReservationController {
                 .append("<li><strong>Pick-up duration:</strong> ").append(reservationDto.getPickUpAppointment().getDuration()).append("</li>")
                 .append("</ul>")
                 .append("<p>Please find attached QR code for more details.</p>")
+                .append("<p>Best regards,<br/>The Isa Project Team</p>")
+                .append("</body>")
+                .append("</html>");
+
+        return mail.toString();
+    }
+
+    private String generateDeliveringConfirmationEmail(ReservationDTO reservation) {
+        String customerName = getCustomerName(reservation.getCustomer());
+
+        StringBuilder mail = new StringBuilder("<html>"
+                + "<body>"
+                + "<p>Dear " + customerName + ",</p>"
+                + "<p>Thank you for your trust. Your order was succesfully delivered. Here are the details:</p>"
+                + "<ul>"
+                + "<li><strong>Company:</strong> " + reservation.getCompany().getName() + "</li>"
+                + "<li><strong>Equipment:</strong> <br/>");
+
+        for (EquipmentAmountDTO e : reservation.getEquipment()) {
+            mail.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append("<br/>");
+        }
+
+        mail.append("</li>")
+                .append("<li><strong>Pick-up Date:</strong> ").append(reservation.getPickUpAppointment().getDate().toString().replace("T", " ")).append("</li>")
+                .append("</ul>")
                 .append("<p>Best regards,<br/>The Isa Project Team</p>")
                 .append("</body>")
                 .append("</html>");
@@ -134,13 +283,13 @@ public class ReservationController {
                 + "Company: " + reservationDto.getCompany().getName() + "\n"
                 + "Customer: " + customerName + "\n"
                 + "Equipment: " + getEquipmentDetails(reservationDto.getEquipment()) + "\n"
-                + "Pick-up Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
+                + "Pick-up-Date: " + reservationDto.getPickUpAppointment().getDate() + "\n";
     }
 
-    private String getEquipmentDetails(List<Equipment> equipmentList) {
+    private String getEquipmentDetails(List<EquipmentAmountDTO> equipmentList) {
         StringBuilder equipmentDetails = new StringBuilder();
-        for (Equipment e : equipmentList) {
-            equipmentDetails.append(e.getName()).append(" (").append(e.getDescription()).append("), ");
+        for (EquipmentAmountDTO e : equipmentList) {
+            equipmentDetails.append(e.getEquipment().getName()).append(" (").append(e.getEquipment().getDescription()).append(")").append(" × ").append(e.getQuantity()).append(", ");
         }
         if (equipmentDetails.length() > 0) {
             equipmentDetails.setLength(equipmentDetails.length() - 2);
@@ -155,9 +304,21 @@ public class ReservationController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         List<ReservationDTO> reservationsDTO = new ArrayList<>();
         for (Reservation r : reservations) {
-
+            if (r.getStatus() == ReservationStatus.PENDING && isAppointmentExpired(r.getPickUpAppointment())) {
+                Reservation expiredReservation = service.expired(r.getId());
+                User user = userService.findOne(expiredReservation.getCustomer().getId());
+                int penaltyPoints = user.getPenaltyPoints();
+                penaltyPoints += 2;
+                user.setPenaltyPoints(penaltyPoints);
+                userService.save(user);
+            }
             reservationsDTO.add(new ReservationDTO(r));
         }
         return new ResponseEntity<>(reservationsDTO, HttpStatus.OK);
+    }
+
+    private boolean isAppointmentExpired(PickUpAppointment appointment) {
+        LocalDateTime endTime = appointment.getDate().plusHours(appointment.getDuration());
+        return endTime.isBefore(LocalDateTime.now());
     }
 }

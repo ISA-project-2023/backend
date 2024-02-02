@@ -11,13 +11,13 @@ public class SystemAdmin extends User {
 
     public SystemAdmin() { super(); }
 
-    public SystemAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, boolean isActivated) {
-        super(id, username, password, email, penaltyPoints, role, firstName, lastName, category);
+    public SystemAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, boolean isActivated, double penaltyMonth) {
+        super(id, username, password, email, penaltyPoints, role, firstName, lastName, category, penaltyMonth);
         //this.id = id1;
         this.isActivated = isActivated;
     }
     public SystemAdmin(User user, boolean isActivated){
-        super(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory());
+        super(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory(), user.getPenaltyMonth());
         //this.id = id;
         this.isActivated = isActivated;
     }

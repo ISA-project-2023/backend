@@ -14,8 +14,9 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String category;
+    private double penaltyMonth;
 
-    public UserDTO(Integer id, String username, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category) {
+    public UserDTO(Integer id, String username, String email, Integer penaltyPoints, UserRole role, String firstName, String lastName, String category, double penaltyMonth) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -24,12 +25,13 @@ public class UserDTO {
         this.firstName = firstName;
         this.lastName = lastName;
         this.category = category;
+        this.penaltyMonth= penaltyMonth;
     }
 
     public UserDTO(){}
 
     public UserDTO(User user){
-        this(user.getId(), user.getUsername(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory());
+        this(user.getId(), user.getUsername(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory(), user.getPenaltyMonth());
     }
 
     public Integer getId() {
@@ -62,4 +64,7 @@ public class UserDTO {
         return lastName;
     }
 
+    public double getPenaltyMonth() {
+        return penaltyMonth;
+    }
 }

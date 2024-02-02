@@ -17,14 +17,14 @@ public class CompanyAdmin extends User {
 
     public CompanyAdmin() { super(); }
 
-    public CompanyAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, String jobDescription, Company company, boolean verified) {
-        super(id, username, password, email, penaltyPoints, role, firstName, lastName, category);
+    public CompanyAdmin(Integer id, String username, String password, String email, Integer penaltyPoints, UserRole role, String firstName,String token, String lastName, String category, Integer id1, String jobDescription, Company company, boolean verified, double penaltyMonth) {
+        super(id, username, password, email, penaltyPoints, role, firstName, lastName, category, penaltyMonth);
         this.jobDescription = jobDescription;
         this.company = company;
         this.isVerified = verified;
     }
     public CompanyAdmin(User user, Integer id, String jobDescription, Company company, boolean verified){
-        super(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory());
+        super(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getPenaltyPoints(), user.getRole(), user.getFirstName(), user.getLastName(), user.getCategory(), user.getPenaltyMonth());
         this.jobDescription = jobDescription;
         this.company = company;
         this.isVerified = verified;

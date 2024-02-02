@@ -22,11 +22,18 @@ public class CompanyEquipmentService {
     public Page<CompanyEquipment> findAll(Pageable pageable) { return companyEquipmentRepository.findAll(pageable); }
 
     public List<CompanyEquipment> findAll() { return companyEquipmentRepository.findAll(); }
+
+    @Transactional
     public List<CompanyEquipment> findAllByCompany(Company company) { return companyEquipmentRepository.findAllByCompany(company); }
     public List<CompanyEquipment> findAllByEquipment(Equipment equipment) { return companyEquipmentRepository.findAllByEquipment(equipment); }
     public CompanyEquipment findOne(CompanyEquipmentId id) { return companyEquipmentRepository.findOne(id); }
     @Transactional
-    public CompanyEquipment save(CompanyEquipment companyEquipment) { return companyEquipmentRepository.save(companyEquipment); }
+    public CompanyEquipment save(CompanyEquipment companyEquipment) {
+        if(companyEquipment.getQuantity()>0)
+            return companyEquipmentRepository.save(companyEquipment);
+        else
+            return null;
+    }
     @Transactional
     public void remove(CompanyEquipmentId id){
         companyEquipmentRepository.deleteByCompanyEquipmentId(id.getCompanyId(), id.getEquipmentId());

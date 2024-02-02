@@ -15,7 +15,7 @@ public class CompanyAdminDTO extends UserDTO {
     public CompanyAdminDTO() {}
     public CompanyAdminDTO(CompanyAdmin companyAdmin){
         super(companyAdmin.getId(), companyAdmin.getUsername(), companyAdmin.getEmail(), companyAdmin.getPenaltyPoints(), companyAdmin.getRole(),
-                companyAdmin.getFirstName(), companyAdmin.getLastName(), companyAdmin.getCategory());
+                companyAdmin.getFirstName(), companyAdmin.getLastName(), companyAdmin.getCategory(), companyAdmin.getPenaltyMonth());
         this.jobDescription = companyAdmin.getJobDescription();
         this.company = companyAdmin.getCompany();
         this.isVerified = companyAdmin.isVerified();

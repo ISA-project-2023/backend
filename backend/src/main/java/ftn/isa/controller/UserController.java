@@ -58,6 +58,7 @@ public class UserController {
         }
 
         if (authenticatedUser != null && authenticatedUser.isEnabled()) {
+            authenticatedUser = userService.resetPenaltyPoints(authenticatedUser);
             session = request.getSession();
             session.setAttribute("user", authenticatedUser);
             if (loggedinCustomer != null){
@@ -81,7 +82,9 @@ public class UserController {
      @GetMapping("/current-customer")
      public ResponseEntity<CustomerDTO> getCurrentCustomer(HttpServletRequest request){
         if(session!=null){
-            Customer customer = (Customer) session.getAttribute("customer");
+            Customer current = (Customer) session.getAttribute("customer");
+            Customer customer = customerService.find(current.getId());
+            session.setAttribute("customer", customer);
             return new ResponseEntity<>(new CustomerDTO(customer), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -100,7 +103,9 @@ public class UserController {
     @GetMapping("/current-user")
     public ResponseEntity<UserDTO> getCurrentUser(HttpServletRequest request){
         if(session!=null){
-            User user = (User) session.getAttribute("user");
+            User current = (User) session.getAttribute("user");
+            User user = userService.findOne(current.getId());
+            session.setAttribute("user", user);
             if(user != null){
                 return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
             }

@@ -1,19 +1,27 @@
 package ftn.isa.service;
 
+import ftn.isa.domain.Customer;
 import ftn.isa.domain.SystemAdmin;
 import ftn.isa.domain.User;
 import ftn.isa.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class UserService {
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    public User findByToken(String token) { return userRepository.findByToken(token); }
     public User findOne(Integer id) {
         return userRepository.findById(id).orElseGet(null);
     }
@@ -47,4 +55,39 @@ public class UserService {
 
         return null;
     }
+    public User resetPenaltyPoints(User user){
+        LocalDate currentDate = LocalDate.now();
+        double val = currentDate.getYear() + (double) currentDate.getMonthValue() / 100;
+        if(user.getPenaltyMonth()<val){
+            user.setPenaltyPoints(0);
+            user.setPenaltyMonth(val);
+            return save(user);
+        }
+        return user;
+    }
+
+    public Object fetchUser(String id) {
+        // Provera da li podaci već postoje u kešu
+        Object cachedData = redisTemplate.opsForValue().get(id);
+
+        if (cachedData != null) {
+            // Podaci su već u kešu, koristi ih
+            return cachedData;
+        } else {
+            // Podaci nisu u kešu, idemo do baze podataka
+            Object fetchedData = fetchDataFromDatabase(id);
+
+            // Ažuriranje keša sa novim podacima
+            redisTemplate.opsForValue().set(id, fetchedData);
+
+            return fetchedData;
+        }
+    }
+    private Object fetchDataFromDatabase(String id) {
+        Integer userId = Integer.parseInt(id);
+        User user = userRepository.findById(userId).orElse(null);
+
+        return user;
+    }
+
 }

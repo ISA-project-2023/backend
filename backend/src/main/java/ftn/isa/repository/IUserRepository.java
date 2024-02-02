@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface IUserRepository extends JpaRepository<User, Integer> {
 
+    public User findByToken(String token);
     public User findOneByUsername(String username);
     public Page<User> findAll(Pageable pageable);
     public List<User> findAllByLastName(String lastName);

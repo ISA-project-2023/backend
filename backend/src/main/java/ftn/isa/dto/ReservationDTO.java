@@ -9,10 +9,10 @@ public class ReservationDTO {
     private Customer customer;
     private ReservationStatus status;
     private Company company;
-    private List<Equipment> equipment;
+    private List<EquipmentAmountDTO> equipment;
 
     public ReservationDTO(){}
-    public ReservationDTO(Integer id, PickUpAppointment pickUpAppointment, Customer customer, ReservationStatus status, Company company, List<Equipment> equipment) {
+    public ReservationDTO(Integer id, PickUpAppointment pickUpAppointment, Customer customer, ReservationStatus status, Company company, List<EquipmentAmountDTO> equipment) {
         this.id = id;
         this.pickUpAppointment = pickUpAppointment;
         this.customer = customer;
@@ -44,7 +44,11 @@ public class ReservationDTO {
         return company;
     }
 
-    public List<Equipment> getEquipment() {
+    public List<EquipmentAmountDTO> getEquipment() {
         return equipment;
+    }
+
+    public void setEquipment(List<EquipmentAmountDTO> equipment) {
+        this.equipment = equipment;
     }
 }
