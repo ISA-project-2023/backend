@@ -9,6 +9,7 @@ This project aims to develop a web application serving as a centralized informat
 - **Backend:** Java, Spring Boot
 - **Frontend:** Angular
 - **Database:** PostgreSQL (pgAdmin)
+- **Message Queue:** RabbitMQ
 
 ## System Functionality
 
@@ -36,6 +37,32 @@ To set up the project locally, follow these steps:
     2. Set up the backend using Java and Spring Boot.
     3. Set up the frontend using Angular.
     4. Configure the database using pgAdmin.
+
+## Running The Application
+
+* Running the Angular application: Navigate to the `frontend-app/` folder and run the command:
+    ```bash
+    npm install --force
+    ng serve
+    ```
+
+* [Installation and running RabbitMQ](https://www.youtube.com/watch?v=KhYiaEOrw7Q)
+
+* Database configuration:
+    ```
+    postgresql://localhost:5432/jpa,
+    username=jpa,
+    password=super
+    ```
+
+* Running the Java Spring Boot Application (IntelliJ IDEA):
+
+    1. Projects -> Open -> (rabbitmq-private-hopital) -> Run
+    2. Projects -> Open -> (rabbitmq-producer-example) -> Run
+    3. Projects -> Open -> (backend) -> Run
+    4. Projects -> Open -> (external-application) -> Run
+
+    Note: Install all the dependencies from the `pom.xml` file
 
 
 ## Contributors
