@@ -67,7 +67,8 @@ To set up the project locally, follow these steps:
 
 ## Contributors
 
-- **Lara Petković** RA 185-2020
-- **Dušan Suđić** RA 81-2020
-- **Jelisaveta Letić** RA 82-2020
-- **Luka Milanko** RA 78-2020
+- [Lara Petković](https://github.com/lara-petkovic) RA 185-2020
+- [Dušan Suđić](https://github.com/dusan-sudjic) RA 81-2020
+- [Jelisaveta Letić](https://github.com/jelly0107) RA 82-2020
+- [Luka Milanko](https://github.com/Lukaa01) RA 78-2020
+
